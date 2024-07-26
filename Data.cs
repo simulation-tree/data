@@ -10,43 +10,46 @@ namespace Data
     /// Represents a span of <see cref="byte"/> that can be found with
     /// a <see cref="DataRequest"/>.
     /// </summary>
-    public readonly struct Data : IDisposable
+    public readonly struct Data : IData, IDisposable
     {
         private readonly Entity entity;
-        private readonly UnmanagedList<byte> bytes;
 
-        public readonly bool IsDestroyed => entity.IsDestroyed;
-        public readonly ReadOnlySpan<byte> Bytes => bytes.AsSpan();
-        public readonly FixedString Name => entity.GetComponent<IsData>().name;
+        World IEntity.World => entity.world;
+        eint IEntity.Value => entity.value;
 
+#if NET5_0_OR_GREATER
+        [Obsolete("Default constructor not supported.", true)]
         public Data()
         {
-            throw new InvalidOperationException("Cannot create a resource without a world.");
+            throw new NotSupportedException();
         }
+#endif
 
-        public Data(World world, ReadOnlySpan<char> fileName)
+        public Data(World world, ReadOnlySpan<char> address)
         {
             entity = new(world);
-            entity.AddComponent(new IsData(fileName));
-            bytes = entity.CreateCollection<byte>();
+            entity.AddComponent(new IsData(address));
+            entity.CreateList<Entity, byte>();
         }
 
-        public Data(World world, ReadOnlySpan<char> fileName, ReadOnlySpan<byte> bytes)
+        public Data(World world, ReadOnlySpan<char> address, ReadOnlySpan<byte> bytes)
         {
             entity = new(world);
-            entity.AddComponent(new IsData(fileName));
-            this.bytes = entity.CreateCollection<byte>((uint)(bytes.Length + 1));
-            this.bytes.AddRange(bytes);
+            entity.AddComponent(new IsData(address));
+
+            UnmanagedList<byte> list = entity.CreateList<Entity, byte>((uint)bytes.Length);
+            list.AddRange(bytes);
         }
 
-        public Data(World world, ReadOnlySpan<char> fileName, ReadOnlySpan<char> text)
+        public Data(World world, ReadOnlySpan<char> address, ReadOnlySpan<char> text)
         {
             entity = new(world);
-            entity.AddComponent(new IsData(fileName));
-            using BinaryWriter writer = new();
+            entity.AddComponent(new IsData(address));
+            using BinaryWriter writer = BinaryWriter.Create();
             writer.WriteUTF8Span(text);
-            bytes = entity.CreateCollection<byte>(writer.Position + 1);
-            bytes.AddRange(writer.AsSpan());
+
+            UnmanagedList<byte> list = entity.CreateList<Entity, byte>(writer.Position);
+            list.AddRange(writer.AsSpan());
         }
 
         public readonly void Dispose()
@@ -56,27 +59,15 @@ namespace Data
 
         public readonly override string ToString()
         {
-            FixedString name = Name;
+            FixedString name = this.GetAddress();
             Span<char> buffer = stackalloc char[name.Length];
             name.CopyTo(buffer);
             return new string(buffer);
         }
-
-        public readonly void Clear()
+        
+        public static Query GetQuery(World world)
         {
-            bytes.Clear();
-        }
-
-        public readonly void Write(ReadOnlySpan<char> text)
-        {
-            using BinaryWriter writer = new();
-            writer.WriteUTF8Span(text);
-            Write(writer.AsSpan());
-        }
-
-        public readonly void Write(ReadOnlySpan<byte> bytes)
-        {
-            this.bytes.AddRange(bytes);
+            return new Query(world, RuntimeType.Get<IsData>());
         }
     }
 }

@@ -5,16 +5,16 @@ namespace Data.Components
 {
     public struct IsData
     {
-        public FixedString name;
+        public FixedString address;
 
-        public IsData(FixedString name)
+        public IsData(FixedString address)
         {
-            this.name = name;
+            this.address = address;
         }
 
-        public IsData(ReadOnlySpan<char> name)
+        public IsData(ReadOnlySpan<char> address)
         {
-            this.name = new(name);
+            this.address = new(address);
         }
     }
 }
