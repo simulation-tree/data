@@ -2,7 +2,6 @@
 using Simulation;
 using System;
 using Unmanaged;
-using Unmanaged.Collections;
 
 namespace Data
 {
@@ -36,20 +35,18 @@ namespace Data
         {
             entity = new(world);
             entity.AddComponent(new IsData(address));
+            entity.CreateList<Entity, byte>();
 
-            UnmanagedList<byte> list = entity.CreateList<Entity, byte>((uint)bytes.Length);
-            list.AddRange(bytes);
+            this.Write(bytes);
         }
 
         public Data(World world, ReadOnlySpan<char> address, ReadOnlySpan<char> text)
         {
             entity = new(world);
             entity.AddComponent(new IsData(address));
-            using BinaryWriter writer = BinaryWriter.Create();
-            writer.WriteUTF8Span(text);
+            entity.CreateList<Entity, byte>();
 
-            UnmanagedList<byte> list = entity.CreateList<Entity, byte>(writer.Position);
-            list.AddRange(writer.AsSpan());
+            this.Write(text);
         }
 
         public readonly void Dispose()
@@ -64,7 +61,7 @@ namespace Data
             name.CopyTo(buffer);
             return new string(buffer);
         }
-        
+
         public static Query GetQuery(World world)
         {
             return new Query(world, RuntimeType.Get<IsData>());

@@ -20,14 +20,19 @@ public static class DataFunctions
         data.GetList<T, byte>().Clear();
     }
 
+    /// <summary>
+    /// Appends the given text as UTF8 formatted bytes.
+    /// </summary>
     public static void Write<T>(this T data, ReadOnlySpan<char> text) where T : unmanaged, IData
     {
         using BinaryWriter writer = BinaryWriter.Create();
         writer.WriteUTF8Span(text);
-        Span<byte> bytes = writer.AsSpan();
-        data.GetList<T, byte>().AddRange(bytes);
+        data.Write(writer.AsSpan());
     }
 
+    /// <summary>
+    /// Appends the given bytes.
+    /// </summary>
     public static void Write<T>(this T data, ReadOnlySpan<byte> bytes) where T : unmanaged, IData
     {
         data.GetList<T, byte>().AddRange(bytes);
