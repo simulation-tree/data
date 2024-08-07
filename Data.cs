@@ -11,7 +11,7 @@ namespace Data
     /// </summary>
     public readonly struct Data : IData, IDisposable
     {
-        private readonly Entity entity;
+        public readonly Entity entity;
 
         World IEntity.World => entity.world;
         eint IEntity.Value => entity.value;
