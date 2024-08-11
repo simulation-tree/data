@@ -62,7 +62,7 @@ namespace Data
             return new string(buffer);
         }
 
-        public static Query GetQuery(World world)
+        Query IEntity.GetQuery(World world)
         {
             return new Query(world, RuntimeType.Get<IsData>());
         }

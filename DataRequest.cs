@@ -76,7 +76,7 @@ namespace Data
             return entity.GetList<Entity, byte>().AsSpan();
         }
         
-        public static Query GetQuery(World world)
+        Query IEntity.GetQuery(World world)
         {
             return new Query(world, RuntimeType.Get<IsDataRequest>());
         }
