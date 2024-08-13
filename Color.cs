@@ -28,7 +28,7 @@ namespace Data
 
         private Vector4 value;
 
-        public float Hue
+        public float H
         {
             readonly get
             {
@@ -64,11 +64,11 @@ namespace Data
             }
             set
             {
-                this = FromHSV(value, Saturation, Value, Alpha);
+                this = FromHSV(value, S, V, A);
             }
         }
 
-        public float Saturation
+        public float S
         {
             readonly get
             {
@@ -79,20 +79,20 @@ namespace Data
             }
             set
             {
-                this = FromHSV(Hue, value, Value, Alpha);
+                this = FromHSV(H, value, V, A);
             }
         }
 
-        public float Value
+        public float V
         {
             readonly get => Math.Max(value.X, Math.Max(value.Y, value.Z));
             set
             {
-                this = FromHSV(Hue, Saturation, value, Alpha);
+                this = FromHSV(H, S, value, A);
             }
         }
 
-        public float Alpha
+        public float A
         {
             readonly get => value.W;
             set
@@ -101,7 +101,7 @@ namespace Data
             }
         }
 
-        public float RedChannel
+        public float R
         {
             readonly get => value.X;
             set
@@ -110,7 +110,7 @@ namespace Data
             }
         }
 
-        public float GreenChannel
+        public float G
         {
             readonly get => value.Y;
             set
@@ -119,7 +119,7 @@ namespace Data
             }
         }
 
-        public float BlueChannel
+        public float B
         {
             readonly get => value.Z;
             set
@@ -136,6 +136,11 @@ namespace Data
         public Color(float red, float green, float blue, float alpha = 1f)
         {
             value = new Vector4(red, green, blue, alpha);
+        }
+
+        public readonly Vector4 AsVector4()
+        {
+            return value;
         }
 
         public static Color FromHSV(float hue, float saturation, float value, float alpha = 1f)

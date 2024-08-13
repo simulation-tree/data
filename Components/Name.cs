@@ -2,9 +2,9 @@
 
 namespace Data.Components
 {
-    public readonly struct Name
+    public struct Name
     {
-        public readonly FixedString value;
+        public FixedString value;
 
         public Name(FixedString value)
         {
