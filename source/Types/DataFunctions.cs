@@ -5,17 +5,17 @@ using Unmanaged;
 
 public static class DataFunctions
 {
-    public static Span<byte> GetBytes<T>(this T data) where T : IData
+    public static Span<byte> GetBytes<T>(this T data) where T : IDataSource
     {
         return data.GetList<T, byte>().AsSpan();
     }
 
-    public static FixedString GetAddress<T>(this T data) where T : IData
+    public static FixedString GetAddress<T>(this T data) where T : IDataSource
     {
         return data.GetComponent<T, IsData>().address;
     }
 
-    public static void Clear<T>(this T data) where T : IData
+    public static void Clear<T>(this T data) where T : IDataSource
     {
         data.GetList<T, byte>().Clear();
     }
@@ -23,7 +23,7 @@ public static class DataFunctions
     /// <summary>
     /// Appends the given text as UTF8 formatted bytes.
     /// </summary>
-    public static void Write<T>(this T data, ReadOnlySpan<char> text) where T : IData
+    public static void Write<T>(this T data, ReadOnlySpan<char> text) where T : IDataSource
     {
         using BinaryWriter writer = BinaryWriter.Create();
         writer.WriteUTF8Span(text);
@@ -33,7 +33,7 @@ public static class DataFunctions
     /// <summary>
     /// Appends the given bytes.
     /// </summary>
-    public static void Write<T>(this T data, ReadOnlySpan<byte> bytes) where T : IData
+    public static void Write<T>(this T data, ReadOnlySpan<byte> bytes) where T : IDataSource
     {
         data.GetList<T, byte>().AddRange(bytes);
     }

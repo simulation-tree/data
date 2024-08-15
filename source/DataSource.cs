@@ -9,7 +9,7 @@ namespace Data
     /// Represents a span of <see cref="byte"/> that can be found with
     /// a <see cref="DataRequest"/>.
     /// </summary>
-    public readonly struct Data : IData, IDisposable
+    public readonly struct DataSource : IDataSource, IDisposable
     {
         private readonly Entity entity;
 
@@ -18,20 +18,20 @@ namespace Data
 
 #if NET5_0_OR_GREATER
         [Obsolete("Default constructor not supported.", true)]
-        public Data()
+        public DataSource()
         {
             throw new NotSupportedException();
         }
 #endif
 
-        public Data(World world, ReadOnlySpan<char> address)
+        public DataSource(World world, ReadOnlySpan<char> address)
         {
             entity = new(world);
             entity.AddComponent(new IsData(address));
             entity.CreateList<Entity, byte>();
         }
 
-        public Data(World world, ReadOnlySpan<char> address, ReadOnlySpan<byte> bytes)
+        public DataSource(World world, ReadOnlySpan<char> address, ReadOnlySpan<byte> bytes)
         {
             entity = new(world);
             entity.AddComponent(new IsData(address));
@@ -40,7 +40,7 @@ namespace Data
             this.Write(bytes);
         }
 
-        public Data(World world, ReadOnlySpan<char> address, ReadOnlySpan<char> text)
+        public DataSource(World world, ReadOnlySpan<char> address, ReadOnlySpan<char> text)
         {
             entity = new(world);
             entity.AddComponent(new IsData(address));

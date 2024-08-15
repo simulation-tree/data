@@ -19,5 +19,11 @@ namespace Data.Components
             this.address = new(address);
             changed = true;
         }
+
+        public IsDataRequest(FixedString address)
+        {
+            this.address = address;
+            changed = true;
+        }
     }
 }
