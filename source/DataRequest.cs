@@ -61,52 +61,5 @@ namespace Data
         {
             return new Query(world, RuntimeType.Get<IsDataRequest>());
         }
-
-        public static FixedString GetAddress<T>() where T : unmanaged, IDataReference
-        {
-            return default(T).Value;
-        }
-    }
-
-    public readonly struct DataRequest<T> : IDataRequest, IDisposable where T : unmanaged, IDataReference
-    {
-        private readonly DataRequest entity;
-
-        World IEntity.World => entity.GetWorld();
-        eint IEntity.Value => entity.GetEntityValue();
-
-#if NET
-        [Obsolete("Default constructor not supported.", true)]
-        public DataRequest()
-        {
-            throw new NotSupportedException();
-        }
-#endif
-
-        public DataRequest(World world, eint existingEntity)
-        {
-            this.entity = new(world, existingEntity);
-        }
-
-        public DataRequest(World world)
-        {
-            FixedString address = DataRequest.GetAddress<T>();
-            entity = new(world, address);
-        }
-
-        public readonly override string ToString()
-        {
-            return entity.ToString();
-        }
-
-        public readonly void Dispose()
-        {
-            entity.Dispose();
-        }
-
-        Query IEntity.GetQuery(World world)
-        {
-            return new Query(world, RuntimeType.Get<IsDataRequest>());
-        }
     }
 }

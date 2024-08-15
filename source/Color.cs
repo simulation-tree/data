@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace Data
 {
-    public struct Color
+    public struct Color : IEquatable<Color>
     {
         public static readonly Color Black = new(0, 0, 0, 1);
         public static readonly Color White = new(1, 1, 1, 1);
@@ -170,6 +170,31 @@ namespace Data
             {
                 throw new ArgumentOutOfRangeException(nameof(hue), hue, "Hue must be between contained within the 0-1 range");
             }
+        }
+
+        public readonly override bool Equals(object? obj)
+        {
+            return obj is Color color && Equals(color);
+        }
+
+        public readonly bool Equals(Color other)
+        {
+            return value.Equals(other.value);
+        }
+
+        public readonly override int GetHashCode()
+        {
+            return HashCode.Combine(value);
+        }
+
+        public static bool operator ==(Color left, Color right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(Color left, Color right)
+        {
+            return !(left == right);
         }
     }
 }

@@ -156,5 +156,10 @@ namespace Data
         {
             return !(left == right);
         }
+
+        public static FixedString Get<T>() where T : unmanaged, IDataReference
+        {
+            return default(T).Value;
+        }
     }
 }
