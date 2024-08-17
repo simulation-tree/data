@@ -13,6 +13,9 @@ namespace Data
     {
         private readonly Entity entity;
 
+        public readonly Span<byte> Bytes => entity.GetList<byte>().AsSpan();
+        public readonly FixedString Address => entity.GetComponent<IsData>().address;
+
         World IEntity.World => entity.world;
         eint IEntity.Value => entity.value;
 
@@ -28,25 +31,25 @@ namespace Data
         {
             entity = new(world);
             entity.AddComponent(new IsData(address));
-            entity.CreateList<Entity, byte>();
+            entity.CreateList<byte>();
         }
 
         public DataSource(World world, ReadOnlySpan<char> address, ReadOnlySpan<byte> bytes)
         {
             entity = new(world);
             entity.AddComponent(new IsData(address));
-            entity.CreateList<Entity, byte>();
+            entity.CreateList<byte>();
 
-            this.Write(bytes);
+            Write(bytes);
         }
 
         public DataSource(World world, ReadOnlySpan<char> address, ReadOnlySpan<char> text)
         {
             entity = new(world);
             entity.AddComponent(new IsData(address));
-            entity.CreateList<Entity, byte>();
+            entity.CreateList<byte>();
 
-            this.Write(text);
+            Write(text);
         }
 
         public readonly void Dispose()
@@ -56,15 +59,38 @@ namespace Data
 
         public readonly override string ToString()
         {
-            FixedString name = this.GetAddress();
+            FixedString name = this.Address;
             Span<char> buffer = stackalloc char[name.Length];
             name.CopyTo(buffer);
             return new string(buffer);
         }
 
-        Query IEntity.GetQuery(World world)
+        readonly Query IEntity.GetQuery(World world)
         {
             return new Query(world, RuntimeType.Get<IsData>());
+        }
+
+        public readonly void Clear()
+        {
+            entity.GetList<byte>().Clear();
+        }
+
+        /// <summary>
+        /// Appends the given text as UTF8 formatted bytes.
+        /// </summary>
+        public readonly void Write(ReadOnlySpan<char> text)
+        {
+            using BinaryWriter writer = BinaryWriter.Create();
+            writer.WriteUTF8Span(text);
+            Write(writer.AsSpan());
+        }
+
+        /// <summary>
+        /// Appends the given bytes.
+        /// </summary>
+        public readonly void Write(ReadOnlySpan<byte> bytes) 
+        {
+            entity.GetList<byte>().AddRange(bytes);
         }
     }
 }

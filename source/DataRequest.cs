@@ -13,6 +13,18 @@ namespace Data
     {
         private readonly Entity entity;
 
+        public readonly FixedString Address
+        {
+            get
+            {
+                IsDataRequest component = entity.GetComponent<IsDataRequest>();
+                return component.address;
+            }
+        }
+
+        public readonly bool IsLoaded => entity.ContainsList<byte>();
+        public readonly ReadOnlySpan<byte> Bytes => entity.GetList<byte>().AsSpan();
+
         World IEntity.World => entity.world;
         eint IEntity.Value => entity.value;
 
@@ -49,7 +61,7 @@ namespace Data
 
         public readonly override string ToString()
         {
-            return entity.GetComponent<Entity, IsDataRequest>().address.ToString();
+            return entity.GetComponent<IsDataRequest>().address.ToString();
         }
 
         public readonly void Dispose()
