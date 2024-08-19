@@ -1,8 +1,10 @@
-﻿using Simulation;
-using Data.Components;
-using Data.Events;
+﻿using Data.Components;
+using Simulation;
 using System;
+using System.Threading.Tasks;
+using System.Threading;
 using Unmanaged;
+using Unmanaged.Collections;
 
 namespace Data
 {
@@ -22,8 +24,10 @@ namespace Data
             }
         }
 
-        public readonly bool IsLoaded => entity.ContainsList<byte>();
-        public readonly ReadOnlySpan<byte> Bytes => entity.GetList<byte>().AsSpan();
+        public readonly DataStatus Status => entity.GetComponent<IsDataRequest>().status;
+        public readonly ReadOnlySpan<byte> Data => entity.GetList<byte>().AsSpan();
+        public readonly bool IsLoaded => Status == DataStatus.Loaded;
+        public readonly bool IsFinished => Status == DataStatus.Loaded || Status == DataStatus.None;
 
         World IEntity.World => entity.world;
         eint IEntity.Value => entity.value;
@@ -45,23 +49,17 @@ namespace Data
         {
             entity = new(world);
             entity.AddComponent(new IsDataRequest(address));
-
-            world.Submit(new DataUpdate());
-            world.Poll();
         }
 
         public DataRequest(World world, FixedString address)
         {
             entity = new(world);
             entity.AddComponent(new IsDataRequest(address));
-
-            world.Submit(new DataUpdate());
-            world.Poll();
         }
 
         public readonly override string ToString()
         {
-            return entity.GetComponent<IsDataRequest>().address.ToString();
+            return Address.ToString();
         }
 
         public readonly void Dispose()
@@ -69,9 +67,47 @@ namespace Data
             entity.Dispose();
         }
 
-        Query IEntity.GetQuery(World world)
+        readonly Query IEntity.GetQuery(World world)
         {
             return new Query(world, RuntimeType.Get<IsDataRequest>());
+        }
+
+        /// <summary>
+        /// Awaits until the requested byte data has been loaded and available.
+        /// </summary>
+        public async Task UntilLoaded(CancellationToken cancellation = default)
+        {
+            while (!IsLoaded)
+            {
+                await Task.Delay(1, cancellation);
+            }
+        }
+
+        public bool TryGetData(out UnmanagedList<byte> data)
+        {
+            if (IsLoaded)
+            {
+                data = entity.GetList<byte>();
+                return true;
+            }
+            else
+            {
+                data = default;
+                return false;
+            }
+        }
+
+        public static implicit operator Entity(DataRequest request)
+        {
+            return request.entity;
+        }
+
+        public enum DataStatus : byte
+        {
+            Unknown,
+            Loading,
+            Loaded,
+            None
         }
     }
 }
