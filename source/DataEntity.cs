@@ -26,8 +26,8 @@ namespace Data
 
         public readonly ReadOnlySpan<byte> Data => entity.GetList<byte>().AsSpan();
 
-        World IEntity.World => entity.world;
-        eint IEntity.Value => entity.value;
+        World IEntity.World => entity;
+        eint IEntity.Value => entity;
 
 #if NET
         [Obsolete("Default constructor not supported.", true)]

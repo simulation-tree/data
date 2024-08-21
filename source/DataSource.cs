@@ -16,8 +16,8 @@ namespace Data
         public readonly Span<byte> Bytes => entity.GetList<byte>().AsSpan();
         public readonly FixedString Address => entity.GetComponent<IsDataSource>().address;
 
-        World IEntity.World => entity.world;
-        eint IEntity.Value => entity.value;
+        World IEntity.World => entity;
+        eint IEntity.Value => entity;
 
 #if NET5_0_OR_GREATER
         [Obsolete("Default constructor not supported.", true)]
