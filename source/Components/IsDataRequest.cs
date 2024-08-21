@@ -6,18 +6,18 @@ namespace Data.Components
     public struct IsDataRequest
     {
         public FixedString address;
-        public DataRequest.DataStatus status;
+        public uint version;
 
         public IsDataRequest(ReadOnlySpan<char> address)
         {
+            version = default;
             this.address = new(address);
-            status = DataRequest.DataStatus.Unknown;
         }
 
         public IsDataRequest(FixedString address)
         {
+            version = default;
             this.address = address;
-            status = DataRequest.DataStatus.Unknown;
         }
     }
 }

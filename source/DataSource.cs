@@ -7,14 +7,14 @@ namespace Data
 {
     /// <summary>
     /// Represents a span of <see cref="byte"/> that can be found with
-    /// a <see cref="DataRequest"/>.
+    /// a <see cref="DataEntity"/>.
     /// </summary>
     public readonly struct DataSource : IDataSource, IDisposable
     {
         private readonly Entity entity;
 
         public readonly Span<byte> Bytes => entity.GetList<byte>().AsSpan();
-        public readonly FixedString Address => entity.GetComponent<IsData>().address;
+        public readonly FixedString Address => entity.GetComponent<IsDataSource>().address;
 
         World IEntity.World => entity.world;
         eint IEntity.Value => entity.value;
@@ -30,14 +30,14 @@ namespace Data
         public DataSource(World world, ReadOnlySpan<char> address)
         {
             entity = new(world);
-            entity.AddComponent(new IsData(address));
+            entity.AddComponent(new IsDataSource(address));
             entity.CreateList<byte>();
         }
 
         public DataSource(World world, ReadOnlySpan<char> address, ReadOnlySpan<byte> bytes)
         {
             entity = new(world);
-            entity.AddComponent(new IsData(address));
+            entity.AddComponent(new IsDataSource(address));
             entity.CreateList<byte>();
 
             Write(bytes);
@@ -46,7 +46,7 @@ namespace Data
         public DataSource(World world, ReadOnlySpan<char> address, ReadOnlySpan<char> text)
         {
             entity = new(world);
-            entity.AddComponent(new IsData(address));
+            entity.AddComponent(new IsDataSource(address));
             entity.CreateList<byte>();
 
             Write(text);
@@ -67,7 +67,7 @@ namespace Data
 
         readonly Query IEntity.GetQuery(World world)
         {
-            return new Query(world, RuntimeType.Get<IsData>());
+            return new Query(world, RuntimeType.Get<IsDataSource>());
         }
 
         public readonly void Clear()
