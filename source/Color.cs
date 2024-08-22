@@ -12,7 +12,7 @@ namespace Data
 
         public static readonly Color Red = new(1, 0, 0, 1);
         public static readonly Color Green = new(0, 1, 0, 1);
-        public static readonly Color DeepBlue = new(0, 0, 1, 1);
+        public static readonly Color Blue = new(0, 0, 1, 1);
 
         public static readonly Color Yellow = new(1, 1, 0, 1);
         public static readonly Color Cyan = new(0, 1, 1, 1);
