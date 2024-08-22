@@ -61,7 +61,7 @@ namespace Data
         {
             FixedString name = this.Address;
             Span<char> buffer = stackalloc char[name.Length];
-            name.CopyTo(buffer);
+            name.ToString(buffer);
             return new string(buffer);
         }
 

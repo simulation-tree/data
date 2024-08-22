@@ -35,14 +35,14 @@ namespace Data
         public readonly bool Equals(FixedString other)
         {
             Span<char> buffer = stackalloc char[FixedString.MaxLength];
-            int length = other.CopyTo(buffer);
+            int length = other.ToString(buffer);
             return Equals(buffer[..length]);
         }
 
         public readonly bool Equals(ReadOnlySpan<char> other)
         {
             Span<char> self = stackalloc char[FixedString.MaxLength];
-            int length = value.CopyTo(self);
+            int length = value.ToString(self);
             for (int i = 0; i < length; i++)
             {
                 char s = self[i];
@@ -78,7 +78,7 @@ namespace Data
         public readonly bool EndsWith(ReadOnlySpan<char> other)
         {
             Span<char> self = stackalloc char[FixedString.MaxLength];
-            int length = value.CopyTo(self);
+            int length = value.ToString(self);
             for (int i = other.Length - 1; i >= 0; i--)
             {
                 char s = self[length - 1];
@@ -115,7 +115,7 @@ namespace Data
         public readonly bool Matches(ReadOnlySpan<char> other)
         {
             Span<char> self = stackalloc char[FixedString.MaxLength];
-            int length = value.CopyTo(self);
+            int length = value.ToString(self);
             if (other[0] == '*')
             {
                 if (other[1] == '/' || other[0] == '\\')
@@ -138,7 +138,7 @@ namespace Data
         public readonly bool Matches(FixedString other)
         {
             Span<char> buffer = stackalloc char[FixedString.MaxLength];
-            int length = other.CopyTo(buffer);
+            int length = other.ToString(buffer);
             return Matches(buffer[..length]);
         }
 
