@@ -11,7 +11,7 @@ namespace Data
     /// <summary>
     /// An entity that will contain data loaded from its address.
     /// </summary>
-    public readonly struct DataEntity : IEntity, IDisposable
+    public readonly struct DataRequest : IEntity, IDisposable
     {
         private readonly Entity entity;
 
@@ -31,24 +31,24 @@ namespace Data
 
 #if NET
         [Obsolete("Default constructor not supported.", true)]
-        public DataEntity()
+        public DataRequest()
         {
             throw new NotSupportedException();
         }
 #endif
 
-        public DataEntity(World world, eint existingEntity)
+        public DataRequest(World world, eint existingEntity)
         {
             this.entity = new(world, existingEntity);
         }
 
-        public DataEntity(World world, ReadOnlySpan<char> address)
+        public DataRequest(World world, ReadOnlySpan<char> address)
         {
             entity = new(world);
             entity.AddComponent(new IsDataRequest(address));
         }
 
-        public DataEntity(World world, FixedString address)
+        public DataRequest(World world, FixedString address)
         {
             entity = new(world);
             entity.AddComponent(new IsDataRequest(address));
@@ -83,7 +83,7 @@ namespace Data
             }
         }
 
-        public static implicit operator Entity(DataEntity request)
+        public static implicit operator Entity(DataRequest request)
         {
             return request.entity;
         }

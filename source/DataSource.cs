@@ -7,7 +7,7 @@ namespace Data
 {
     /// <summary>
     /// Represents a span of <see cref="byte"/> that can be found with
-    /// a <see cref="DataEntity"/>.
+    /// a <see cref="DataRequest"/>.
     /// </summary>
     public readonly struct DataSource : IDataSource, IDisposable
     {
