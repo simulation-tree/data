@@ -13,7 +13,7 @@ namespace Data
     {
         private readonly Entity entity;
 
-        public readonly Span<byte> Bytes => entity.GetList<byte>().AsSpan();
+        public readonly Span<byte> Bytes => entity.GetArray<byte>();
         public readonly FixedString Address => entity.GetComponent<IsDataSource>().address;
 
         World IEntity.World => entity;
@@ -31,24 +31,21 @@ namespace Data
         {
             entity = new(world);
             entity.AddComponent(new IsDataSource(address));
-            entity.CreateList<byte>();
+            entity.CreateArray<byte>(0);
         }
 
         public DataSource(World world, ReadOnlySpan<char> address, ReadOnlySpan<byte> bytes)
         {
             entity = new(world);
             entity.AddComponent(new IsDataSource(address));
-            entity.CreateList<byte>();
-
-            Write(bytes);
+            entity.CreateArray(bytes);
         }
 
         public DataSource(World world, ReadOnlySpan<char> address, ReadOnlySpan<char> text)
         {
             entity = new(world);
             entity.AddComponent(new IsDataSource(address));
-            entity.CreateList<byte>();
-
+            entity.CreateArray<byte>(0);
             Write(text);
         }
 
@@ -72,7 +69,7 @@ namespace Data
 
         public readonly void Clear()
         {
-            entity.GetList<byte>().Clear();
+            entity.ResizeArray<byte>(0);
         }
 
         /// <summary>
@@ -90,7 +87,8 @@ namespace Data
         /// </summary>
         public readonly void Write(ReadOnlySpan<byte> bytes) 
         {
-            entity.GetList<byte>().AddRange(bytes);
+            Span<byte> array = entity.ResizeArray<byte>((uint)bytes.Length);
+            bytes.CopyTo(array);
         }
     }
 }

@@ -1,10 +1,7 @@
 ﻿using Data.Components;
 using Simulation;
 using System;
-using System.Threading.Tasks;
-using System.Threading;
 using Unmanaged;
-using Unmanaged.Collections;
 
 namespace Data
 {
@@ -24,7 +21,7 @@ namespace Data
             }
         }
 
-        public readonly ReadOnlySpan<byte> Data => entity.GetList<byte>().AsSpan();
+        public readonly ReadOnlySpan<byte> Data => entity.GetArray<byte>();
 
         World IEntity.World => entity;
         eint IEntity.Value => entity;
@@ -69,11 +66,11 @@ namespace Data
             return new Query(world, RuntimeType.Get<IsData>());
         }
 
-        public bool TryGetData(out UnmanagedList<byte> data)
+        public bool TryGetData(out Span<byte> data)
         {
             if (this.Is())
             {
-                data = entity.GetList<byte>();
+                data = entity.GetArray<byte>();
                 return true;
             }
             else
