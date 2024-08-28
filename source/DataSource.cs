@@ -9,7 +9,7 @@ namespace Data
     /// Represents a span of <see cref="byte"/> that can be found with
     /// a <see cref="DataRequest"/>.
     /// </summary>
-    public readonly struct DataSource : IDataSource, IDisposable
+    public readonly struct DataSource : IDataSource
     {
         private readonly Entity entity;
 
@@ -47,11 +47,6 @@ namespace Data
             entity.AddComponent(new IsDataSource(address));
             entity.CreateArray<byte>(0);
             Write(text);
-        }
-
-        public readonly void Dispose()
-        {
-            entity.Dispose();
         }
 
         public readonly override string ToString()

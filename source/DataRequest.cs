@@ -8,7 +8,7 @@ namespace Data
     /// <summary>
     /// An entity that will contain data loaded from its address.
     /// </summary>
-    public readonly struct DataRequest : IEntity, IDisposable
+    public readonly struct DataRequest : IEntity
     {
         private readonly Entity entity;
 
@@ -54,11 +54,6 @@ namespace Data
         public readonly override string ToString()
         {
             return Address.ToString();
-        }
-
-        public readonly void Dispose()
-        {
-            entity.Dispose();
         }
 
         readonly Query IEntity.GetQuery(World world)
