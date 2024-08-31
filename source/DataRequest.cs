@@ -24,7 +24,7 @@ namespace Data
         public readonly ReadOnlySpan<byte> Data => entity.GetArray<byte>();
 
         World IEntity.World => entity;
-        eint IEntity.Value => entity;
+        uint IEntity.Value => entity;
 
 #if NET
         [Obsolete("Default constructor not supported.", true)]
@@ -34,7 +34,7 @@ namespace Data
         }
 #endif
 
-        public DataRequest(World world, eint existingEntity)
+        public DataRequest(World world, uint existingEntity)
         {
             this.entity = new(world, existingEntity);
         }

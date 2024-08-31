@@ -17,7 +17,7 @@ namespace Data
         public readonly FixedString Address => entity.GetComponent<IsDataSource>().address;
 
         World IEntity.World => entity;
-        eint IEntity.Value => entity;
+        uint IEntity.Value => entity;
 
 #if NET5_0_OR_GREATER
         [Obsolete("Default constructor not supported.", true)]
