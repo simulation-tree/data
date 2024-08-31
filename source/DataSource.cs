@@ -14,7 +14,7 @@ namespace Data
         private readonly Entity entity;
 
         public readonly Span<byte> Bytes => entity.GetArray<byte>();
-        public readonly FixedString Address => entity.GetComponent<IsDataSource>().address;
+        public readonly FixedString Address => entity.GetComponentRef<IsDataSource>().address;
 
         World IEntity.World => entity;
         uint IEntity.Value => entity;

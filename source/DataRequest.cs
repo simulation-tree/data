@@ -16,7 +16,7 @@ namespace Data
         {
             get
             {
-                IsDataRequest component = entity.GetComponent<IsDataRequest>();
+                IsDataRequest component = entity.GetComponentRef<IsDataRequest>();
                 return component.address;
             }
         }
