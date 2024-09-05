@@ -13,13 +13,14 @@ namespace Data
     {
         private readonly Entity entity;
 
-        public readonly Span<byte> Bytes => entity.GetArray<byte>();
+        public readonly USpan<byte> Bytes => entity.GetArray<byte>();
         public readonly FixedString Address => entity.GetComponentRef<IsDataSource>().address;
 
-        World IEntity.World => entity;
-        uint IEntity.Value => entity;
+        readonly uint IEntity.Value => entity.value;
+        readonly World IEntity.World => entity.world;
+        readonly Definition IEntity.Definition => new([RuntimeType.Get<IsDataSource>()], [RuntimeType.Get<byte>()]);
 
-#if NET5_0_OR_GREATER
+#if NET
         [Obsolete("Default constructor not supported.", true)]
         public DataSource()
         {
@@ -27,21 +28,50 @@ namespace Data
         }
 #endif
 
-        public DataSource(World world, ReadOnlySpan<char> address)
+        /// <summary>
+        /// Creates an empty data source.
+        /// </summary>
+        public DataSource(World world, USpan<char> address)
         {
             entity = new(world);
             entity.AddComponent(new IsDataSource(address));
             entity.CreateArray<byte>(0);
         }
 
-        public DataSource(World world, ReadOnlySpan<char> address, ReadOnlySpan<byte> bytes)
+        /// <summary>
+        /// Creates an empty data source.
+        /// </summary>
+        public DataSource(World world, FixedString address)
+        {
+            entity = new(world);
+            entity.AddComponent(new IsDataSource(address));
+            entity.CreateArray<byte>(0);
+        }
+
+        /// <summary>
+        /// Creates a data source containing the given bytes.
+        /// </summary>
+        public DataSource(World world, USpan<char> address, USpan<byte> bytes)
         {
             entity = new(world);
             entity.AddComponent(new IsDataSource(address));
             entity.CreateArray(bytes);
         }
 
-        public DataSource(World world, ReadOnlySpan<char> address, ReadOnlySpan<char> text)
+        /// <summary>
+        /// Creates a data source containing the given bytes.
+        /// </summary>
+        public DataSource(World world, FixedString address, USpan<byte> bytes)
+        {
+            entity = new(world);
+            entity.AddComponent(new IsDataSource(address));
+            entity.CreateArray(bytes);
+        }
+
+        /// <summary>
+        /// Creates a data source containing the given text as UTF8 encoded bytes.
+        /// </summary>
+        public DataSource(World world, USpan<char> address, USpan<char> text)
         {
             entity = new(world);
             entity.AddComponent(new IsDataSource(address));
@@ -49,17 +79,39 @@ namespace Data
             Write(text);
         }
 
-        public readonly override string ToString()
+        /// <summary>
+        /// Creates a data source containing the given text as UTF8 encoded bytes.
+        /// </summary>
+        public DataSource(World world, FixedString address, USpan<char> text)
         {
-            FixedString name = this.Address;
-            Span<char> buffer = stackalloc char[name.Length];
-            name.ToString(buffer);
-            return new string(buffer);
+            entity = new(world);
+            entity.AddComponent(new IsDataSource(address));
+            entity.CreateArray<byte>(0);
+            Write(text);
         }
 
-        readonly Query IEntity.GetQuery(World world)
+        /// <summary>
+        /// Creates a data source containing the given text as UTF8 encoded bytes.
+        /// </summary>
+        public DataSource(World world, FixedString address, string text)
         {
-            return new Query(world, RuntimeType.Get<IsDataSource>());
+            entity = new(world);
+            entity.AddComponent(new IsDataSource(address));
+            entity.CreateArray<byte>(0);
+            Write(text);
+        }
+
+        public unsafe readonly override string ToString()
+        {
+            USpan<char> buffer = stackalloc char[(int)FixedString.MaxLength];
+            uint length = ToString(buffer);
+            return new string(buffer.pointer, 0, (int)length);
+        }
+
+        public readonly uint ToString(USpan<char> buffer)
+        {
+            FixedString name = Address;
+            return name.CopyTo(buffer);
         }
 
         public readonly void Clear()
@@ -70,19 +122,39 @@ namespace Data
         /// <summary>
         /// Appends the given text as UTF8 formatted bytes.
         /// </summary>
-        public readonly void Write(ReadOnlySpan<char> text)
+        public readonly void Write(USpan<char> text)
         {
             using BinaryWriter writer = BinaryWriter.Create();
-            writer.WriteUTF8Span(text);
-            Write(writer.AsSpan());
+            writer.WriteUTF8Text(text);
+            Write(writer.GetBytes());
+        }
+
+        /// <summary>
+        /// Appends the given text as UTF8 formatted bytes.
+        /// </summary>
+        public readonly void Write(FixedString text)
+        {
+            using BinaryWriter writer = BinaryWriter.Create();
+            writer.WriteUTF8Text(text);
+            Write(writer.GetBytes());
+        }
+
+        /// <summary>
+        /// Appends the given text as UTF8 formatted bytes.
+        /// </summary>
+        public readonly void Write(string text)
+        {
+            using BinaryWriter writer = BinaryWriter.Create();
+            writer.WriteUTF8Text(text);
+            Write(writer.GetBytes());
         }
 
         /// <summary>
         /// Appends the given bytes.
         /// </summary>
-        public readonly void Write(ReadOnlySpan<byte> bytes) 
+        public readonly void Write(USpan<byte> bytes)
         {
-            Span<byte> array = entity.ResizeArray<byte>((uint)bytes.Length);
+            USpan<byte> array = entity.ResizeArray<byte>(bytes.length);
             bytes.CopyTo(array);
         }
     }

@@ -10,5 +10,10 @@ namespace Data.Components
         {
             this.value = value;
         }
+
+        public Name(USpan<char> value)
+        {
+            this.value = new FixedString(value);
+        }
     }
 }

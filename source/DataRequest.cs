@@ -10,7 +10,7 @@ namespace Data
     /// </summary>
     public readonly struct DataRequest : IEntity
     {
-        private readonly Entity entity;
+        public readonly Entity entity;
 
         public readonly FixedString Address
         {
@@ -21,10 +21,11 @@ namespace Data
             }
         }
 
-        public readonly ReadOnlySpan<byte> Data => entity.GetArray<byte>();
+        public readonly USpan<byte> Data => entity.GetArray<byte>();
 
-        World IEntity.World => entity;
-        uint IEntity.Value => entity;
+        readonly uint IEntity.Value => entity.value;
+        readonly World IEntity.World => entity.world;
+        readonly Definition IEntity.Definition => new([RuntimeType.Get<IsData>()], []);
 
 #if NET
         [Obsolete("Default constructor not supported.", true)]
@@ -39,7 +40,7 @@ namespace Data
             this.entity = new(world, existingEntity);
         }
 
-        public DataRequest(World world, ReadOnlySpan<char> address)
+        public DataRequest(World world, USpan<char> address)
         {
             entity = new(world);
             entity.AddComponent(new IsDataRequest(address));
@@ -56,14 +57,9 @@ namespace Data
             return Address.ToString();
         }
 
-        readonly Query IEntity.GetQuery(World world)
+        public bool TryGetData(out USpan<byte> data)
         {
-            return new Query(world, RuntimeType.Get<IsData>());
-        }
-
-        public bool TryGetData(out Span<byte> data)
-        {
-            if (this.Is())
+            if (this.IsCompliant())
             {
                 data = entity.GetArray<byte>();
                 return true;
@@ -73,11 +69,6 @@ namespace Data
                 data = default;
                 return false;
             }
-        }
-
-        public static implicit operator Entity(DataRequest request)
-        {
-            return request.entity;
         }
     }
 }

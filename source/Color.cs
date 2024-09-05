@@ -18,15 +18,37 @@ namespace Data
         public static readonly Color Cyan = new(0, 1, 1, 1);
         public static readonly Color Magenta = new(1, 0, 1, 1);
 
+        /// <summary>
+        /// Mix between <see cref="Red"/> and <see cref="Yellow"/>
+        /// </summary>
         public static readonly Color Orange = new(1, 0.5f, 0, 1);
-        public static readonly Color Chartreuse = new(0, 1, 0.5f, 1);
-        public static readonly Color SpringGreen = new(0, 0.5f, 1, 1);
 
-        public static readonly Color Violet = new(0.5f, 0, 1, 1);
-        public static readonly Color Rose = new(1, 0, 0.5f, 1);
+        /// <summary>
+        /// Mix between <see cref="Yellow"/> and <see cref="Green"/>
+        /// </summary>
+        public static readonly Color Chartreuse = new(0.5f, 1, 0f, 1);
+        
+        /// <summary>
+        /// Mix between <see cref="Green"/> and <see cref="Cyan"/>
+        /// </summary>
+        public static readonly Color SpringGreen = new(0, 1, 0.5f, 1);
+
+        /// <summary>
+        /// Mix between <see cref="Cyan"/> and <see cref="Blue"/>
+        /// </summary>
         public static readonly Color SkyBlue = new(0, 0.5f, 1, 1);
 
-        private Vector4 value;
+        /// <summary>
+        /// Mix between <see cref="Blue"/> and <see cref="Magenta"/>
+        /// </summary>
+        public static readonly Color Violet = new(0.5f, 0, 1, 1);
+
+        /// <summary>
+        /// Mix between <see cref="Magenta"/> and <see cref="Red"/>
+        /// </summary>
+        public static readonly Color Rose = new(1, 0, 0.5f, 1);
+
+        public Vector4 value;
 
         public float H
         {
@@ -62,10 +84,7 @@ namespace Data
 
                 return hue / 360;
             }
-            set
-            {
-                this = FromHSV(value, S, V, A);
-            }
+            set => this = FromHSV(value, S, V, A);
         }
 
         public float S
@@ -77,55 +96,37 @@ namespace Data
                 float delta = max - min;
                 return max == 0 ? 0 : delta / max;
             }
-            set
-            {
-                this = FromHSV(H, value, V, A);
-            }
+            set => this = FromHSV(H, value, V, A);
         }
 
         public float V
         {
             readonly get => Math.Max(value.X, Math.Max(value.Y, value.Z));
-            set
-            {
-                this = FromHSV(H, S, value, A);
-            }
+            set => this = FromHSV(H, S, value, A);
         }
 
         public float A
         {
             readonly get => value.W;
-            set
-            {
-                this.value = new(this.value.X, this.value.Y, this.value.Z, value);
-            }
+            set => this.value.W = value;
         }
 
         public float R
         {
             readonly get => value.X;
-            set
-            {
-                this.value = new(value, this.value.Y, this.value.Z, this.value.W);
-            }
+            set => this.value.X = value;
         }
 
         public float G
         {
             readonly get => value.Y;
-            set
-            {
-                this.value = new(this.value.X, value, this.value.Z, this.value.W);
-            }
+            set => this.value.Y = value;
         }
 
         public float B
         {
             readonly get => value.Z;
-            set
-            {
-                this.value = new(this.value.X, this.value.Y, value, this.value.W);
-            }
+            set => this.value.Z = value;
         }
 
         public Color(Vector4 value)
@@ -133,14 +134,14 @@ namespace Data
             this.value = value;
         }
 
+        public Color(float component)
+        {
+            value = new Vector4(component);
+        }
+
         public Color(float red, float green, float blue, float alpha = 1f)
         {
             value = new Vector4(red, green, blue, alpha);
-        }
-
-        public readonly Vector4 AsVector4()
-        {
-            return value;
         }
 
         public static Color FromHSV(float hue, float saturation, float value, float alpha = 1f)
@@ -195,6 +196,51 @@ namespace Data
         public static bool operator !=(Color left, Color right)
         {
             return !(left == right);
+        }
+
+        public static Color operator +(Color left, Color right)
+        {
+            return new Color(left.value + right.value);
+        }
+
+        public static Color operator -(Color left, Color right)
+        {
+            return new Color(left.value - right.value);
+        }
+
+        public static Color operator *(Color left, Color right)
+        {
+            return new Color(left.value * right.value);
+        }
+
+        public static Color operator *(Color left, float right)
+        {
+            return new Color(left.value * right);
+        }
+
+        public static Color operator *(float left, Color right)
+        {
+            return new Color(left * right.value);
+        }
+
+        public static Color operator /(Color left, Color right)
+        {
+            return new Color(left.value / right.value);
+        }
+
+        public static Color operator /(Color left, float right)
+        {
+            return new Color(left.value / right);
+        }
+
+        public static Color operator /(float left, Color right)
+        {
+            Vector4 newValue = right.value;
+            newValue.X = left / newValue.X;
+            newValue.Y = left / newValue.Y;
+            newValue.Z = left / newValue.Z;
+            newValue.W = left / newValue.W;
+            return new Color(newValue);
         }
     }
 }

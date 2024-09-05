@@ -12,7 +12,7 @@ namespace Data
             this.value = value;
         }
 
-        public Address(ReadOnlySpan<char> value)
+        public Address(USpan<char> value)
         {
             this.value = new(value);
         }
@@ -34,16 +34,21 @@ namespace Data
 
         public readonly bool Equals(FixedString other)
         {
-            Span<char> buffer = stackalloc char[FixedString.MaxLength];
-            int length = other.ToString(buffer);
-            return Equals(buffer[..length]);
+            USpan<char> buffer = stackalloc char[(int)FixedString.MaxLength];
+            uint length = other.CopyTo(buffer);
+            return Equals(buffer.Slice(0, length));
         }
 
-        public readonly bool Equals(ReadOnlySpan<char> other)
+        public readonly bool Equals(string other)
         {
-            Span<char> self = stackalloc char[FixedString.MaxLength];
-            int length = value.ToString(self);
-            for (int i = 0; i < length; i++)
+            return Equals(other.AsSpan());
+        }
+
+        public readonly bool Equals(USpan<char> other)
+        {
+            USpan<char> self = stackalloc char[(int)FixedString.MaxLength];
+            uint length = value.CopyTo(self);
+            for (uint i = 0; i < length; i++)
             {
                 char s = self[i];
                 char o = other[i];
@@ -75,11 +80,11 @@ namespace Data
             return true;
         }
 
-        public readonly bool EndsWith(ReadOnlySpan<char> other)
+        public readonly bool EndsWith(USpan<char> other)
         {
-            Span<char> self = stackalloc char[FixedString.MaxLength];
-            int length = value.ToString(self);
-            for (int i = other.Length - 1; i >= 0; i--)
+            USpan<char> self = stackalloc char[(int)FixedString.MaxLength];
+            uint length = value.CopyTo(self);
+            for (uint i = other.length - 1; i != uint.MaxValue; i--)
             {
                 char s = self[length - 1];
                 char o = other[i];
@@ -112,34 +117,46 @@ namespace Data
             return true;
         }
 
-        public readonly bool Matches(ReadOnlySpan<char> other)
+        public readonly bool Matches(string other)
         {
-            Span<char> self = stackalloc char[FixedString.MaxLength];
-            int length = value.ToString(self);
+            USpan<char> buffer = stackalloc char[other.Length];
+            for (uint i = 0; i < other.Length; i++)
+            {
+                buffer[i] = other[(int)i];
+            }
+
+            return Matches(buffer);
+        }
+
+        public readonly bool Matches(USpan<char> other)
+        {
+            USpan<char> self = stackalloc char[(int)FixedString.MaxLength];
+            uint length = value.CopyTo(self);
             if (other[0] == '*')
             {
+                //todo: fault: what about * in the middle? or .. tokens?
                 if (other[1] == '/' || other[0] == '\\')
                 {
-                    other = other[2..];
+                    other = other.Slice(2);
                 }
                 else
                 {
-                    other = other[1..];
+                    other = other.Slice(1);
                 }
 
-                return new Address(self[..length]).EndsWith(other);
+                return new Address(self.Slice(0, length)).EndsWith(other);
             }
             else
             {
-                return new Address(self[..length]).Equals(other);
+                return new Address(self.Slice(0, length)).Equals(other);
             }
         }
 
         public readonly bool Matches(FixedString other)
         {
-            Span<char> buffer = stackalloc char[FixedString.MaxLength];
-            int length = other.ToString(buffer);
-            return Matches(buffer[..length]);
+            USpan<char> buffer = stackalloc char[(int)FixedString.MaxLength];
+            uint length = other.CopyTo(buffer);
+            return Matches(buffer.Slice(0, length));
         }
 
         public readonly override int GetHashCode()

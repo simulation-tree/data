@@ -1,5 +1,4 @@
-﻿using System;
-using Unmanaged;
+﻿using Unmanaged;
 
 namespace Data.Components
 {
@@ -8,7 +7,7 @@ namespace Data.Components
         public FixedString address;
         public uint version;
 
-        public IsDataRequest(ReadOnlySpan<char> address)
+        public IsDataRequest(USpan<char> address)
         {
             version = default;
             this.address = new(address);
