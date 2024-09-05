@@ -13,8 +13,8 @@ while (!request.Is())
     world.Poll();
 }
 
-ReadOnlySpan<byte> data = request.GetBytes();
-Assert.That(Encoding.UTF8.GetString(data), Is.EqualTo("Hello, World!"));
+USpan<byte> data = request.GetBytes();
+Assert.That(new FixedString(data).ToString(), Is.EqualTo("Hello, World!"));
 ```
 
 ### Address mechanisms
@@ -22,12 +22,12 @@ Assert.That(Encoding.UTF8.GetString(data), Is.EqualTo("Hello, World!"));
 * Finding embedded resources with file-system-like paths
 
 ### Sources
-By default, the minimum source expected to be available are entities with the `IsData` component,
-that are wrapped around in the `DataSource` type.
+By default, the minimum source expected to be available are entities with the `IsData` component.
+These are wrapped around in the `DataSource` type.
 ```csharp
 DataSource source = new(world, "MyProject/Assets/text.txt");
 source.Write("Hello, World!");
 ```
 
 Systems that implement fetching are encouraged to implement loading from other sources too,
-to not limit it to just entities. The [data-systems](https://github.com/game-simulations/data-systems) implementation project is an example of this.
+as to not limit it to just entities. The [data-systems](https://github.com/game-simulations/data-systems) implementation project is an example of this.
