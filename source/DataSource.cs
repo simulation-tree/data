@@ -1,6 +1,5 @@
 ﻿using Data.Components;
 using Simulation;
-using System;
 using Unmanaged;
 
 namespace Data
@@ -18,7 +17,7 @@ namespace Data
 
         readonly uint IEntity.Value => entity.value;
         readonly World IEntity.World => entity.world;
-        readonly Definition IEntity.Definition => new([RuntimeType.Get<IsDataSource>()], [RuntimeType.Get<byte>()]);
+        readonly Definition IEntity.Definition => new Definition().AddComponentType<IsDataSource>().AddArrayType<byte>();
 
 #if NET
         [Obsolete("Default constructor not supported.", true)]

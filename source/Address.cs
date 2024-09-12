@@ -41,7 +41,7 @@ namespace Data
 
         public readonly bool Equals(string other)
         {
-            return Equals(other.AsSpan());
+            return Equals(other.AsUSpan());
         }
 
         public readonly bool Equals(USpan<char> other)
