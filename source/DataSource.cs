@@ -154,7 +154,7 @@ namespace Data
         /// </summary>
         public readonly void Write(USpan<byte> bytes)
         {
-            USpan<byte> array = entity.ResizeArray<byte>(bytes.length);
+            USpan<byte> array = entity.ResizeArray<byte>(bytes.Length);
             bytes.CopyTo(array);
         }
     }

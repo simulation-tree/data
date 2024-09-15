@@ -84,7 +84,7 @@ namespace Data
         {
             USpan<char> self = stackalloc char[(int)FixedString.MaxLength];
             uint length = value.CopyTo(self);
-            for (uint i = other.length - 1; i != uint.MaxValue; i--)
+            for (uint i = other.Length - 1; i != uint.MaxValue; i--)
             {
                 char s = self[length - 1];
                 char o = other[i];
