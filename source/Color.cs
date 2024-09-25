@@ -27,7 +27,7 @@ namespace Data
         /// Mix between <see cref="Yellow"/> and <see cref="Green"/>
         /// </summary>
         public static readonly Color Chartreuse = new(0.5f, 1, 0f, 1);
-        
+
         /// <summary>
         /// Mix between <see cref="Green"/> and <see cref="Cyan"/>
         /// </summary>
@@ -48,7 +48,7 @@ namespace Data
         /// </summary>
         public static readonly Color Rose = new(1, 0, 0.5f, 1);
 
-        public Vector4 value;
+        private Vector4 value;
 
         public float H
         {
@@ -186,6 +186,11 @@ namespace Data
         public readonly override int GetHashCode()
         {
             return HashCode.Combine(value);
+        }
+
+        public readonly Vector4 AsVector4()
+        {
+            return value;
         }
 
         public static bool operator ==(Color left, Color right)
