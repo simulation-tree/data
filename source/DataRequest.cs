@@ -52,6 +52,11 @@ namespace Data
             entity.AddComponent(new IsDataRequest(address));
         }
 
+        public readonly void Dispose()
+        {
+            entity.Dispose();
+        }
+
         public readonly override string ToString()
         {
             return Address.ToString();

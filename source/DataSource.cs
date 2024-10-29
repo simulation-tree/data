@@ -101,6 +101,11 @@ namespace Data
             Write(text);
         }
 
+        public readonly void Dispose()
+        {
+            entity.Dispose();
+        }
+
         public unsafe readonly override string ToString()
         {
             USpan<char> buffer = stackalloc char[(int)FixedString.MaxLength];
