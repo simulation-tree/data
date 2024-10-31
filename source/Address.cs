@@ -34,7 +34,7 @@ namespace Data
 
         public readonly bool Equals(FixedString other)
         {
-            USpan<char> buffer = stackalloc char[(int)FixedString.MaxLength];
+            USpan<char> buffer = stackalloc char[(int)FixedString.Capacity];
             uint length = other.CopyTo(buffer);
             return Equals(buffer.Slice(0, length));
         }
@@ -46,7 +46,7 @@ namespace Data
 
         public readonly bool Equals(USpan<char> other)
         {
-            USpan<char> self = stackalloc char[(int)FixedString.MaxLength];
+            USpan<char> self = stackalloc char[(int)FixedString.Capacity];
             uint length = value.CopyTo(self);
             for (uint i = 0; i < length; i++)
             {
@@ -82,7 +82,7 @@ namespace Data
 
         public readonly bool EndsWith(USpan<char> other)
         {
-            USpan<char> self = stackalloc char[(int)FixedString.MaxLength];
+            USpan<char> self = stackalloc char[(int)FixedString.Capacity];
             uint length = value.CopyTo(self);
             for (uint i = other.Length - 1; i != uint.MaxValue; i--)
             {
@@ -130,7 +130,7 @@ namespace Data
 
         public readonly bool Matches(USpan<char> other)
         {
-            USpan<char> self = stackalloc char[(int)FixedString.MaxLength];
+            USpan<char> self = stackalloc char[(int)FixedString.Capacity];
             uint length = value.CopyTo(self);
             if (other[0] == '*')
             {
@@ -154,7 +154,7 @@ namespace Data
 
         public readonly bool Matches(FixedString other)
         {
-            USpan<char> buffer = stackalloc char[(int)FixedString.MaxLength];
+            USpan<char> buffer = stackalloc char[(int)FixedString.Capacity];
             uint length = other.CopyTo(buffer);
             return Matches(buffer.Slice(0, length));
         }
