@@ -48,7 +48,7 @@ namespace Data
         /// </summary>
         public static readonly Color Rose = new(1, 0, 0.5f, 1);
 
-        private Vector4 value;
+        public Vector4 value;
 
         public float H
         {
@@ -186,11 +186,6 @@ namespace Data
         public readonly override int GetHashCode()
         {
             return HashCode.Combine(value);
-        }
-
-        public readonly Vector4 AsVector4()
-        {
-            return value;
         }
 
         public static bool operator ==(Color left, Color right)
