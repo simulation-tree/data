@@ -1,6 +1,7 @@
 ﻿using Data.Components;
 using Simulation;
 using System;
+using System.Diagnostics;
 using Unmanaged;
 
 namespace Data
@@ -21,14 +22,21 @@ namespace Data
             }
         }
 
-        public readonly USpan<byte> Data => entity.GetArray<byte>();
+        public readonly USpan<byte> Data
+        {
+            get
+            {
+                ThrowIfDataNotAvailable();
+                return entity.GetArray<byte>();
+            }
+        }
 
         readonly uint IEntity.Value => entity.value;
         readonly World IEntity.World => entity.world;
         readonly Definition IEntity.Definition => new Definition().AddComponentType<IsData>();
 
 #if NET
-        [Obsolete("Default constructor not supported.", true)]
+        [Obsolete("Default constructor not supported", true)]
         public DataRequest()
         {
             throw new NotSupportedException();
@@ -73,6 +81,15 @@ namespace Data
             {
                 data = default;
                 return false;
+            }
+        }
+
+        [Conditional("DEBUG")]
+        public void ThrowIfDataNotAvailable()
+        {
+            if (!this.IsCompliant())
+            {
+                throw new InvalidOperationException($"Data not yet available on {this}");
             }
         }
     }

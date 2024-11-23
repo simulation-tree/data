@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>0376e77d-05b0-4720-a54b-ede58ea59d38</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Data</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Address.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Color.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Components\IsData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Components\IsDataRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Components\IsDataSource.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Components\Name.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DataRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DataSource.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RequestedDataNotFoundException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Types\IDataReference.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Types\IDataSource.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Data.asmdef" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)package.json" />
+  </ItemGroup>
+</Project>

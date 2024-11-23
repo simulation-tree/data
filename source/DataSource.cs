@@ -129,7 +129,7 @@ namespace Data
         /// </summary>
         public readonly void Write(USpan<char> text)
         {
-            using BinaryWriter writer = BinaryWriter.Create();
+            using BinaryWriter writer = new(4);
             writer.WriteUTF8Text(text);
             Write(writer.GetBytes());
         }
@@ -139,7 +139,7 @@ namespace Data
         /// </summary>
         public readonly void Write(FixedString text)
         {
-            using BinaryWriter writer = BinaryWriter.Create();
+            using BinaryWriter writer = new(4);
             writer.WriteUTF8Text(text);
             Write(writer.GetBytes());
         }
@@ -149,7 +149,7 @@ namespace Data
         /// </summary>
         public readonly void Write(string text)
         {
-            using BinaryWriter writer = BinaryWriter.Create();
+            using BinaryWriter writer = new(4);
             writer.WriteUTF8Text(text);
             Write(writer.GetBytes());
         }
