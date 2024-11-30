@@ -1,8 +1,8 @@
 ﻿using Data.Components;
-using Simulation;
 using System;
 using System.Diagnostics;
 using Unmanaged;
+using Worlds;
 
 namespace Data
 {
@@ -11,7 +11,7 @@ namespace Data
     /// </summary>
     public readonly struct DataRequest : IEntity
     {
-        public readonly Entity entity;
+        private readonly Entity entity;
 
         public readonly FixedString Address
         {
@@ -27,7 +27,7 @@ namespace Data
             get
             {
                 ThrowIfDataNotAvailable();
-                return entity.GetArray<byte>();
+                return entity.GetArray<BinaryData>().As<byte>();
             }
         }
 
@@ -72,9 +72,9 @@ namespace Data
 
         public bool TryGetData(out USpan<byte> data)
         {
-            if (this.IsCompliant())
+            if (this.Is())
             {
-                data = entity.GetArray<byte>();
+                data = entity.GetArray<BinaryData>().As<byte>();
                 return true;
             }
             else
@@ -84,13 +84,30 @@ namespace Data
             }
         }
 
+        /// <summary>
+        /// Reads the data as a UTF8 string.
+        /// </summary>
+        /// <returns>Amount of <c>char</c> values copied.</returns>
+        public uint CopyDataAsUTF8To(USpan<char> buffer)
+        {
+            ThrowIfDataNotAvailable();
+
+            using BinaryReader reader = new(Data);
+            return reader.ReadUTF8Span(buffer);
+        }
+
         [Conditional("DEBUG")]
         public void ThrowIfDataNotAvailable()
         {
-            if (!this.IsCompliant())
+            if (!this.Is())
             {
-                throw new InvalidOperationException($"Data not yet available on {this}");
+                throw new InvalidOperationException($"Data not yet available on `{entity.GetEntityValue()}`");
             }
+        }
+
+        public static implicit operator Entity(DataRequest request)
+        {
+            return request.entity;
         }
     }
 }

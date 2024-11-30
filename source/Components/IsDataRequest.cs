@@ -1,7 +1,9 @@
 ﻿using Unmanaged;
+using Worlds;
 
 namespace Data.Components
 {
+    [Component]
     public struct IsDataRequest
     {
         public FixedString address;

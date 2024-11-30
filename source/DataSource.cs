@@ -1,7 +1,7 @@
 ﻿using Data.Components;
-using Simulation;
 using System;
 using Unmanaged;
+using Worlds;
 
 namespace Data
 {
@@ -13,7 +13,7 @@ namespace Data
     {
         private readonly Entity entity;
 
-        public readonly USpan<byte> Bytes => entity.GetArray<byte>();
+        public readonly USpan<byte> Bytes => entity.GetArray<BinaryData>().As<byte>();
         public readonly FixedString Address => entity.GetComponentRef<IsDataSource>().address;
 
         readonly uint IEntity.Value => entity.value;
@@ -35,7 +35,7 @@ namespace Data
         {
             entity = new(world);
             entity.AddComponent(new IsDataSource(address));
-            entity.CreateArray<byte>(0);
+            entity.CreateArray<BinaryData>();
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Data
         {
             entity = new(world);
             entity.AddComponent(new IsDataSource(address));
-            entity.CreateArray<byte>(0);
+            entity.CreateArray<BinaryData>();
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace Data
         {
             entity = new(world);
             entity.AddComponent(new IsDataSource(address));
-            entity.CreateArray(bytes);
+            entity.CreateArray(bytes.As<BinaryData>());
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace Data
         {
             entity = new(world);
             entity.AddComponent(new IsDataSource(address));
-            entity.CreateArray(bytes);
+            entity.CreateArray(bytes.As<BinaryData>());
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace Data
         {
             entity = new(world);
             entity.AddComponent(new IsDataSource(address));
-            entity.CreateArray<byte>(0);
+            entity.CreateArray<BinaryData>();
             Write(text);
         }
 
@@ -86,7 +86,7 @@ namespace Data
         {
             entity = new(world);
             entity.AddComponent(new IsDataSource(address));
-            entity.CreateArray<byte>(0);
+            entity.CreateArray<BinaryData>();
             Write(text);
         }
 
@@ -97,7 +97,7 @@ namespace Data
         {
             entity = new(world);
             entity.AddComponent(new IsDataSource(address));
-            entity.CreateArray<byte>(0);
+            entity.CreateArray<BinaryData>();
             Write(text);
         }
 
@@ -121,7 +121,7 @@ namespace Data
 
         public readonly void Clear()
         {
-            entity.ResizeArray<byte>(0);
+            entity.ResizeArray<BinaryData>(0);
         }
 
         /// <summary>
@@ -159,8 +159,9 @@ namespace Data
         /// </summary>
         public readonly void Write(USpan<byte> bytes)
         {
-            USpan<byte> array = entity.ResizeArray<byte>(bytes.Length);
-            bytes.CopyTo(array);
+            USpan<BinaryData> array = entity.GetArray<BinaryData>();
+            array = entity.ResizeArray<BinaryData>(bytes.Length + array.Length);
+            bytes.CopyTo(array.As<byte>());
         }
     }
 }
