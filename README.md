@@ -6,7 +6,7 @@ Entities with the `IsDataRequest` component imply that the entity will have a li
 fetched from whatever source is available:
 ```csharp
 using World world = new();
-DataRequest request = new(world, "*/Assets/text.txt");
+DataRequest request = new(world, "Assets/text.txt");
 while (!request.Is())
 {
     world.Submit(new DataUpdate());

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Numerics;
+using Worlds;
 
 namespace Data
 {
+    [Component]
     public struct Color : IEquatable<Color>
     {
         public static readonly Color Black = new(0, 0, 0, 1);
