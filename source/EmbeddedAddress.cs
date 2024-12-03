@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Unmanaged;
 
@@ -7,6 +8,7 @@ namespace Data
     public readonly struct EmbeddedAddress
     {
         private static readonly List<EmbeddedAddress> all = new();
+        private static readonly HashSet<Address> addresses = new();
 
         public static IReadOnlyList<EmbeddedAddress> All => all;
 
@@ -19,13 +21,24 @@ namespace Data
             this.address = address;
         }
 
-        public static void Register<T>() where T : unmanaged, IEmbeddedResources
+        public static void Register<T>() where T : unmanaged
         {
             T resources = new();
             Assembly assembly = typeof(T).Assembly;
-            foreach (Address address in resources.Addresses)
+            if (resources is IEmbeddedResources embeddedResources)
             {
-                Register(assembly, address);
+                foreach (Address address in embeddedResources.Addresses)
+                {
+                    Register(assembly, address);
+                }
+            }
+            else if (resources is IDataReference dataReference)
+            {
+                Register(assembly, dataReference.Value);
+            }
+            else
+            {
+                throw new NotImplementedException($"Handling of `{typeof(T).Name}` as an embedded resource is not implemented");
             }
         }
 
@@ -36,7 +49,10 @@ namespace Data
 
         public static void Register(Assembly assembly, Address address)
         {
-            all.Add(new EmbeddedAddress(assembly, address));
+            if (addresses.Add(address))
+            {
+                all.Add(new EmbeddedAddress(assembly, address));
+            }
         }
     }
 }
