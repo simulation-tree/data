@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 
-namespace Worlds.Generator
+namespace Data.Generator
 {
     public class SourceBuilder
     {

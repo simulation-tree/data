@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 
-namespace Worlds.Generator
+namespace Data.Generator
 {
     [Generator(LanguageNames.CSharp)]
     public class EmbeddedAddressTableGenerator : IIncrementalGenerator
