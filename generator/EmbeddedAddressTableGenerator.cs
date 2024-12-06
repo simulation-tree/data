@@ -28,7 +28,7 @@ namespace Data.Generator
             source.AppendLine($"namespace {Namespace}");
             source.BeginGroup();
             {
-                source.AppendLine($"public static partial class {TypeName}");
+                source.AppendLine($"internal static partial class {TypeName}");
                 source.BeginGroup();
                 {
                     source.AppendLine($"static {TypeName}()");

@@ -22,6 +22,11 @@ namespace Data
             return value.ToString();
         }
 
+        public readonly uint ToString(USpan<char> buffer)
+        {
+            return value.CopyTo(buffer);
+        }
+
         public readonly override bool Equals(object? obj)
         {
             return obj is Address address && Equals(address);
@@ -117,6 +122,42 @@ namespace Data
             return true;
         }
 
+        public readonly bool EndsWith(FixedString other)
+        {
+            uint length = value.Length;
+            for (uint i = other.Length - 1; i != uint.MaxValue; i--)
+            {
+                char s = value[length - 1];
+                char o = other[i];
+                length--;
+                if (s != o)
+                {
+                    if (s == '/' && (o == '\\' || o == '.'))
+                    {
+                        continue;
+                    }
+                    else if (s == '\\' && (o == '/' || o == '.'))
+                    {
+                        continue;
+                    }
+                    else if (s == '.' && (o == '/' || o == '\\' || o == ' '))
+                    {
+                        continue;
+                    }
+                    else if (s == '_' && o == ' ')
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
         public readonly bool Matches(string other)
         {
             USpan<char> buffer = stackalloc char[other.Length];
@@ -126,6 +167,13 @@ namespace Data
             }
 
             return Matches(buffer);
+        }
+
+        public readonly bool Matches(Address other)
+        {
+            USpan<char> buffer = stackalloc char[(int)FixedString.Capacity];
+            uint length = other.value.CopyTo(buffer);
+            return Matches(buffer.Slice(0, length));
         }
 
         public readonly bool Matches(USpan<char> other)
@@ -154,9 +202,24 @@ namespace Data
 
         public readonly bool Matches(FixedString other)
         {
-            USpan<char> buffer = stackalloc char[(int)FixedString.Capacity];
-            uint length = other.CopyTo(buffer);
-            return Matches(buffer.Slice(0, length));
+            if (other[0] == '*')
+            {
+                //todo: fault: what about * in the middle? or .. tokens?
+                if (other[1] == '/' || other[0] == '\\')
+                {
+                    other = other.Slice(2);
+                }
+                else
+                {
+                    other = other.Slice(1);
+                }
+
+                return new Address(value).EndsWith(other);
+            }
+            else
+            {
+                return new Address(value).Equals(other);
+            }
         }
 
         public readonly override int GetHashCode()

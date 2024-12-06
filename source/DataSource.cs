@@ -14,7 +14,7 @@ namespace Data
         private readonly Entity entity;
 
         public readonly USpan<byte> Bytes => entity.GetArray<BinaryData>().As<byte>();
-        public readonly FixedString Address => entity.GetComponentRef<IsDataSource>().address;
+        public readonly Address Address => entity.GetComponent<IsDataSource>().address;
 
         readonly uint IEntity.Value => entity.value;
         readonly World IEntity.World => entity.world;
@@ -115,8 +115,8 @@ namespace Data
 
         public readonly uint ToString(USpan<char> buffer)
         {
-            FixedString name = Address;
-            return name.CopyTo(buffer);
+            Address name = Address;
+            return name.ToString(buffer);
         }
 
         public readonly void Clear()
