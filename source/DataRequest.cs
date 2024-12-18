@@ -50,14 +50,12 @@ namespace Data
 
         public DataRequest(World world, USpan<char> address)
         {
-            entity = new(world);
-            entity.AddComponent(new IsDataRequest(address));
+            entity = new Entity<IsDataRequest>(world, new IsDataRequest(address));
         }
 
         public DataRequest(World world, FixedString address)
         {
-            entity = new(world);
-            entity.AddComponent(new IsDataRequest(address));
+            entity = new Entity<IsDataRequest>(world, new IsDataRequest(address));
         }
 
         public readonly void Dispose()
