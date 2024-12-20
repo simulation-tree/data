@@ -205,6 +205,11 @@ namespace Data
             return color.value;
         }
 
+        public static implicit operator Color(Vector4 color)
+        {
+            return new Color(color);
+        }
+
         public static Color operator +(Color left, Color right)
         {
             return new Color(left.value + right.value);
