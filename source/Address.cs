@@ -125,7 +125,7 @@ namespace Data
         public readonly bool EndsWith(FixedString other)
         {
             uint length = value.Length;
-            for (uint i = other.Length - 1; i != uint.MaxValue; i--)
+            for (uint i = (byte)(other.Length - 1); i != uint.MaxValue; i--)
             {
                 char s = value[length - 1];
                 char o = other[i];
