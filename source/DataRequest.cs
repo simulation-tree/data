@@ -33,7 +33,11 @@ namespace Data
 
         readonly uint IEntity.Value => entity.value;
         readonly World IEntity.World => entity.world;
-        readonly Definition IEntity.Definition => new Definition().AddComponentType<IsData>();
+
+        readonly Definition IEntity.GetDefinition(Schema schema)
+        {
+            return new Definition().AddComponentType<IsData>(schema);
+        }
 
 #if NET
         [Obsolete("Default constructor not supported", true)]

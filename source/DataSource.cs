@@ -18,7 +18,11 @@ namespace Data
 
         readonly uint IEntity.Value => entity.value;
         readonly World IEntity.World => entity.world;
-        readonly Definition IEntity.Definition => new Definition().AddComponentType<IsDataSource>().AddArrayType<byte>();
+
+        readonly Definition IEntity.GetDefinition(Schema schema)
+        {
+            return new Definition().AddComponentType<IsDataSource>(schema).AddArrayType<byte>(schema);
+        }
 
 #if NET
         [Obsolete("Default constructor not supported.", true)]
