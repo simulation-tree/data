@@ -21,7 +21,7 @@ namespace Data
 
         readonly Definition IEntity.GetDefinition(Schema schema)
         {
-            return new Definition().AddComponentType<IsDataSource>(schema).AddArrayType<byte>(schema);
+            return new Definition().AddComponentType<IsDataSource>(schema).AddArrayElementType<byte>(schema);
         }
 
 #if NET

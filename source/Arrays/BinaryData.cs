@@ -2,7 +2,7 @@
 
 namespace Data.Components
 {
-    [Array]
+    [ArrayElement]
     public struct BinaryData
     {
         public byte value;
