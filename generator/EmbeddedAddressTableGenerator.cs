@@ -31,7 +31,7 @@ namespace Data.Generator
                 source.AppendLine($"internal static partial class {TypeName}");
                 source.BeginGroup();
                 {
-                    source.AppendLine($"static {TypeName}()");
+                    source.AppendLine($"public static void RegisterAll()");
                     source.BeginGroup();
                     {
                         foreach (MetadataReference assemblyReference in compilation.References)
