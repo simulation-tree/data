@@ -1,4 +1,5 @@
-﻿using Unmanaged;
+﻿using System.Collections.Generic;
+using Unmanaged;
 using Worlds;
 
 namespace Data.Components
@@ -19,6 +20,12 @@ namespace Data.Components
         {
             version = default;
             this.address = address;
+        }
+
+        public IsDataRequest(IReadOnlyCollection<char> address)
+        {
+            version = default;
+            this.address = new(address);
         }
     }
 }

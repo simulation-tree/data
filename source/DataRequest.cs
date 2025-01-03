@@ -1,5 +1,6 @@
 ﻿using Data.Components;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Unmanaged;
 using Worlds;
@@ -58,6 +59,11 @@ namespace Data
         }
 
         public DataRequest(World world, FixedString address)
+        {
+            entity = new Entity<IsDataRequest>(world, new IsDataRequest(address));
+        }
+
+        public DataRequest(World world, IReadOnlyCollection<char> address)
         {
             entity = new Entity<IsDataRequest>(world, new IsDataRequest(address));
         }
