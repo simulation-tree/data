@@ -7,7 +7,7 @@ namespace Data.Components
     [Component]
     public struct IsDataRequest
     {
-        public FixedString address;
+        public Address address;
         public uint version;
 
         public IsDataRequest(USpan<char> address)
@@ -16,13 +16,19 @@ namespace Data.Components
             this.address = new(address);
         }
 
-        public IsDataRequest(FixedString address)
+        public IsDataRequest(Address address)
         {
             version = default;
             this.address = address;
         }
 
-        public IsDataRequest(IReadOnlyCollection<char> address)
+        public IsDataRequest(string address)
+        {
+            version = default;
+            this.address = new(address);
+        }
+
+        public IsDataRequest(IEnumerable<char> address)
         {
             version = default;
             this.address = new(address);

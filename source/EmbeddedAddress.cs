@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Unmanaged;
 
 namespace Data
 {
@@ -42,7 +41,7 @@ namespace Data
             }
         }
 
-        public static void Register(Assembly assembly, FixedString address)
+        public static void Register(Assembly assembly, string address)
         {
             Register(assembly, new Address(address));
         }

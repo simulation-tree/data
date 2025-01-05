@@ -35,17 +35,7 @@ namespace Data
         /// <summary>
         /// Creates an empty data source.
         /// </summary>
-        public DataSource(World world, USpan<char> address)
-        {
-            entity = new(world);
-            entity.AddComponent(new IsDataSource(address));
-            entity.CreateArray<BinaryData>();
-        }
-
-        /// <summary>
-        /// Creates an empty data source.
-        /// </summary>
-        public DataSource(World world, FixedString address)
+        public DataSource(World world, Address address)
         {
             entity = new(world);
             entity.AddComponent(new IsDataSource(address));
@@ -55,17 +45,7 @@ namespace Data
         /// <summary>
         /// Creates a data source containing the given bytes.
         /// </summary>
-        public DataSource(World world, USpan<char> address, USpan<byte> bytes)
-        {
-            entity = new(world);
-            entity.AddComponent(new IsDataSource(address));
-            entity.CreateArray(bytes.As<BinaryData>());
-        }
-
-        /// <summary>
-        /// Creates a data source containing the given bytes.
-        /// </summary>
-        public DataSource(World world, FixedString address, USpan<byte> bytes)
+        public DataSource(World world, Address address, USpan<byte> bytes)
         {
             entity = new(world);
             entity.AddComponent(new IsDataSource(address));
@@ -75,7 +55,7 @@ namespace Data
         /// <summary>
         /// Creates a data source containing the given text as UTF8 encoded bytes.
         /// </summary>
-        public DataSource(World world, USpan<char> address, USpan<char> text)
+        public DataSource(World world, Address address, USpan<char> text)
         {
             entity = new(world);
             entity.AddComponent(new IsDataSource(address));
@@ -86,18 +66,7 @@ namespace Data
         /// <summary>
         /// Creates a data source containing the given text as UTF8 encoded bytes.
         /// </summary>
-        public DataSource(World world, FixedString address, USpan<char> text)
-        {
-            entity = new(world);
-            entity.AddComponent(new IsDataSource(address));
-            entity.CreateArray<BinaryData>();
-            Write(text);
-        }
-
-        /// <summary>
-        /// Creates a data source containing the given text as UTF8 encoded bytes.
-        /// </summary>
-        public DataSource(World world, FixedString address, string text)
+        public DataSource(World world, Address address, string text)
         {
             entity = new(world);
             entity.AddComponent(new IsDataSource(address));
@@ -110,7 +79,7 @@ namespace Data
             entity.Dispose();
         }
 
-        public unsafe readonly override string ToString()
+        public readonly override string ToString()
         {
             USpan<char> buffer = stackalloc char[(int)FixedString.Capacity];
             uint length = ToString(buffer);

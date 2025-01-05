@@ -1,9 +1,7 @@
-﻿using Unmanaged;
-
-namespace Data
+﻿namespace Data
 {
     public interface IDataReference
     {
-        FixedString Value { get; }
+        Address Value { get; }
     }
 }

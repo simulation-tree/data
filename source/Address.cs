@@ -1,18 +1,29 @@
 ﻿using System;
+using System.Collections.Generic;
 using Unmanaged;
 
 namespace Data
 {
     public struct Address : IEquatable<Address>
     {
-        private FixedString value;
+        public FixedString value;
 
         public Address(FixedString value)
         {
             this.value = value;
         }
 
+        public Address(string value)
+        {
+            this.value = new(value);
+        }
+
         public Address(USpan<char> value)
+        {
+            this.value = new(value);
+        }
+
+        public Address(IEnumerable<char> value)
         {
             this.value = new(value);
         }
@@ -35,13 +46,6 @@ namespace Data
         public readonly bool Equals(Address other)
         {
             return value == other.value;
-        }
-
-        public readonly bool Equals(FixedString other)
-        {
-            USpan<char> buffer = stackalloc char[(int)FixedString.Capacity];
-            uint length = other.CopyTo(buffer);
-            return Equals(buffer.Slice(0, length));
         }
 
         public readonly bool Equals(string other)
@@ -122,42 +126,6 @@ namespace Data
             return true;
         }
 
-        public readonly bool EndsWith(FixedString other)
-        {
-            uint length = value.Length;
-            for (uint i = (byte)(other.Length - 1); i != uint.MaxValue; i--)
-            {
-                char s = value[length - 1];
-                char o = other[i];
-                length--;
-                if (s != o)
-                {
-                    if (s == '/' && (o == '\\' || o == '.'))
-                    {
-                        continue;
-                    }
-                    else if (s == '\\' && (o == '/' || o == '.'))
-                    {
-                        continue;
-                    }
-                    else if (s == '.' && (o == '/' || o == '\\' || o == ' '))
-                    {
-                        continue;
-                    }
-                    else if (s == '_' && o == ' ')
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            return true;
-        }
-
         public readonly bool Matches(string other)
         {
             USpan<char> buffer = stackalloc char[other.Length];
@@ -200,28 +168,6 @@ namespace Data
             }
         }
 
-        public readonly bool Matches(FixedString other)
-        {
-            if (other[0] == '*')
-            {
-                //todo: fault: what about * in the middle? or .. tokens?
-                if (other[1] == '/' || other[0] == '\\')
-                {
-                    other = other.Slice(2);
-                }
-                else
-                {
-                    other = other.Slice(1);
-                }
-
-                return new Address(value).EndsWith(other);
-            }
-            else
-            {
-                return new Address(value).Equals(other);
-            }
-        }
-
         public readonly override int GetHashCode()
         {
             return value.GetHashCode();
@@ -237,7 +183,12 @@ namespace Data
             return !(left == right);
         }
 
-        public static FixedString Get<T>() where T : unmanaged, IDataReference
+        public static implicit operator Address(string value)
+        {
+            return new(value);
+        }
+
+        public static Address Get<T>() where T : unmanaged, IDataReference
         {
             return default(T).Value;
         }

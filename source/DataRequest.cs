@@ -14,11 +14,14 @@ namespace Data
     {
         private readonly Entity entity;
 
-        public readonly FixedString Address
+        /// <summary>
+        /// Address that this data request is looking for.
+        /// </summary>
+        public readonly Address Address
         {
             get
             {
-                IsDataRequest component = entity.GetComponent<IsDataRequest>();
+                ref IsDataRequest component = ref entity.GetComponent<IsDataRequest>();
                 return component.address;
             }
         }
@@ -31,6 +34,11 @@ namespace Data
                 return entity.GetArray<BinaryData>().As<byte>();
             }
         }
+
+        /// <summary>
+        /// Checks if the data has been loaded.
+        /// </summary>
+        public readonly bool IsLoaded => this.Is();
 
         readonly uint IEntity.Value => entity.value;
         readonly World IEntity.World => entity.world;
@@ -58,12 +66,17 @@ namespace Data
             entity = new Entity<IsDataRequest>(world, new IsDataRequest(address));
         }
 
-        public DataRequest(World world, FixedString address)
+        public DataRequest(World world, Address address)
         {
             entity = new Entity<IsDataRequest>(world, new IsDataRequest(address));
         }
 
-        public DataRequest(World world, IReadOnlyCollection<char> address)
+        public DataRequest(World world, string address)
+        {
+            entity = new Entity<IsDataRequest>(world, new IsDataRequest(address));
+        }
+
+        public DataRequest(World world, IEnumerable<char> address)
         {
             entity = new Entity<IsDataRequest>(world, new IsDataRequest(address));
         }
@@ -78,7 +91,7 @@ namespace Data
             return Address.ToString();
         }
 
-        public bool TryGetData(out USpan<byte> data)
+        public readonly bool TryGetData(out USpan<byte> data)
         {
             if (this.Is())
             {
@@ -92,11 +105,18 @@ namespace Data
             }
         }
 
+        public readonly void SetAddress(Address address)
+        {
+            ref IsDataRequest component = ref entity.GetComponent<IsDataRequest>();
+            component.address = address;
+            component.version++;
+        }
+
         /// <summary>
         /// Reads the data as a UTF8 string.
         /// </summary>
         /// <returns>Amount of <c>char</c> values copied.</returns>
-        public uint CopyDataAsUTF8To(USpan<char> buffer)
+        public readonly uint CopyDataAsUTF8To(USpan<char> buffer)
         {
             ThrowIfDataNotAvailable();
 
