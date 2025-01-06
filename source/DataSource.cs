@@ -19,9 +19,10 @@ namespace Data
         readonly uint IEntity.Value => entity.value;
         readonly World IEntity.World => entity.world;
 
-        readonly Definition IEntity.GetDefinition(Schema schema)
+        readonly void IEntity.Describe(ref Archetype archetype)
         {
-            return new Definition().AddComponentType<IsDataSource>(schema).AddArrayElementType<byte>(schema);
+            archetype.AddComponentType<IsDataSource>();
+            archetype.AddArrayElementType<BinaryData>();
         }
 
 #if NET

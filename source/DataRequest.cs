@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Threading;
 using Unmanaged;
 using Worlds;
 
@@ -38,14 +40,27 @@ namespace Data
         /// <summary>
         /// Checks if the data has been loaded.
         /// </summary>
-        public readonly bool IsLoaded => this.Is();
+        public readonly bool IsLoaded
+        {
+            get
+            {
+                if (entity.TryGetComponent(out IsData data))
+                {
+                    return data.version == entity.GetComponent<IsDataRequest>().version;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
 
         readonly uint IEntity.Value => entity.value;
         readonly World IEntity.World => entity.world;
 
-        readonly Definition IEntity.GetDefinition(Schema schema)
+        readonly void IEntity.Describe(ref Archetype archetype)
         {
-            return new Definition().AddComponentType<IsData>(schema);
+            archetype.AddComponentType<IsDataRequest>();
         }
 
 #if NET
@@ -93,7 +108,7 @@ namespace Data
 
         public readonly bool TryGetData(out USpan<byte> data)
         {
-            if (this.Is())
+            if (IsLoaded)
             {
                 data = entity.GetArray<BinaryData>().As<byte>();
                 return true;
@@ -124,10 +139,19 @@ namespace Data
             return reader.ReadUTF8Span(buffer);
         }
 
+        public async Task UntilLoaded(Update action, CancellationToken cancellation = default)
+        {
+            World world = entity.GetWorld();
+            while (!IsLoaded)
+            {
+                await action(world, cancellation);
+            }
+        }
+
         [Conditional("DEBUG")]
         public void ThrowIfDataNotAvailable()
         {
-            if (!this.Is())
+            if (!IsLoaded)
             {
                 throw new InvalidOperationException($"Data not yet available on `{entity.GetEntityValue()}`");
             }
