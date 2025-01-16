@@ -1,7 +1,9 @@
 # Data
+
 Abstraction of data fetching and references.
 
-### Requesting with addresses
+### Requesting data with addresses
+
 Entities with the `IsDataRequest` component imply that the entity will have a list of bytes
 fetched from whatever source is available:
 ```csharp
@@ -18,10 +20,12 @@ Assert.That(new FixedString(data).ToString(), Is.EqualTo("Hello, World!"));
 ```
 
 ### Address mechanisms
+
 * Able to use `*` as a wildcard, for skipping text until the next matching character
 * Finding embedded resources with file-system-like paths
 
 ### Sources
+
 By default, the minimum source expected to be available are entities with the `IsData` component.
 These are wrapped around in the `DataSource` type.
 ```csharp
