@@ -3,20 +3,22 @@
 	<PropertyGroup>
 		<TargetFramework>net9.0</TargetFramework>
 		<ImplicitUsings>disable</ImplicitUsings>
-		<IncludeBuildOutput>false</IncludeBuildOutput>
-		<IncludeContentInPack>true</IncludeContentInPack>
-		<NoWarn>$(NoWarn);NU5128</NoWarn>
 		<Nullable>enable</Nullable>
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<Title>Data</Title>
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+		<Title>Data Core</Title>
 		<Authors>popcron</Authors>
 		<Company>game-simulations</Company>
-		<Description>Describes arbitrary data</Description>
 		<RepositoryUrl>https://github.com/game-simulations/data</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<IsAotCompatible>True</IsAotCompatible>
 		<IsTrimmable>True</IsTrimmable>
+		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+		<WarningLevel>8</WarningLevel>
+		<NoWarn>1701;1702;CS1591</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -27,8 +29,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\generator\Data.Generator.csproj" />
-	  <ProjectReference Include="..\core\Data.Core.csproj" />
+		<ProjectReference Include="..\..\worlds\core\Worlds.Core.csproj" />
+		<ProjectReference Include="..\..\unmanaged\source\Unmanaged.csproj" />
+		<ProjectReference Include="..\..\collections\source\Collections.csproj" />
 	</ItemGroup>
 
 </Project>
