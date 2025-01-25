@@ -1,24 +1,19 @@
 ﻿using Types;
-using Unmanaged.Tests;
 using Worlds;
+using Worlds.Tests;
 
 namespace Data.Tests
 {
-    public abstract class DataTests : UnmanagedTests
+    public abstract class DataTests : WorldTests
     {
         static DataTests()
         {
             TypeRegistry.Load<Data.TypeBank>();
         }
 
-        public static World CreateWorld()
+        protected override Schema CreateSchema()
         {
-            return new(CreateSchema());
-        }
-
-        public static Schema CreateSchema()
-        {
-            Schema schema = new();
+            Schema schema = base.CreateSchema();
             schema.Load<Data.SchemaBank>();
             return schema;
         }

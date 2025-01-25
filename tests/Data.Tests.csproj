@@ -29,6 +29,7 @@
 		<ProjectReference Include="..\..\worlds\core\Worlds.Core.csproj" />
 		<ProjectReference Include="..\..\unmanaged\source\Unmanaged.csproj" />
 		<ProjectReference Include="..\..\unmanaged\tests\Unmanaged.Tests.csproj" />
+		<ProjectReference Include="..\..\worlds\tests\Worlds.Tests.csproj" />
 		<ProjectReference Include="..\core\Data.Core.csproj" />
 	</ItemGroup>
 
