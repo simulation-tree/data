@@ -8,13 +8,13 @@ namespace Data.Tests
     {
         static DataTests()
         {
-            TypeRegistry.Load<Data.TypeBank>();
+            TypeRegistry.Load<Data.Core.TypeBank>();
         }
 
         protected override Schema CreateSchema()
         {
             Schema schema = base.CreateSchema();
-            schema.Load<Data.SchemaBank>();
+            schema.Load<Data.Core.SchemaBank>();
             return schema;
         }
     }
