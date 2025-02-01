@@ -13,9 +13,6 @@ namespace Data
     {
         private readonly Entity entity;
 
-        public readonly USpan<byte> Bytes => entity.GetArray<BinaryData>().As<byte>();
-        public readonly Address Address => entity.GetComponent<IsDataSource>().address;
-
         readonly uint IEntity.Value => entity.value;
         readonly World IEntity.World => entity.world;
 
@@ -61,7 +58,7 @@ namespace Data
             entity = new(world);
             entity.AddComponent(new IsDataSource(address));
             entity.CreateArray<BinaryData>();
-            WriteUTF8(text);
+            this.WriteUTF8(text);
         }
 
         /// <summary>
@@ -72,7 +69,7 @@ namespace Data
             entity = new(world);
             entity.AddComponent(new IsDataSource(address));
             entity.CreateArray<BinaryData>();
-            WriteUTF8(text);
+            this.WriteUTF8(text);
         }
 
         public readonly void Dispose()
@@ -89,53 +86,7 @@ namespace Data
 
         public readonly uint ToString(USpan<char> buffer)
         {
-            Address name = Address;
-            return name.ToString(buffer);
-        }
-
-        public readonly void Clear()
-        {
-            entity.ResizeArray<BinaryData>(0);
-        }
-
-        /// <summary>
-        /// Appends the given text as UTF8 formatted bytes.
-        /// </summary>
-        public readonly void WriteUTF8(USpan<char> text)
-        {
-            using BinaryWriter writer = new(4);
-            writer.WriteUTF8(text);
-            Write(writer.AsSpan());
-        }
-
-        /// <summary>
-        /// Appends the given text as UTF8 formatted bytes.
-        /// </summary>
-        public readonly void WriteUTF8(FixedString text)
-        {
-            using BinaryWriter writer = new(4);
-            writer.WriteUTF8(text);
-            Write(writer.AsSpan());
-        }
-
-        /// <summary>
-        /// Appends the given text as UTF8 formatted bytes.
-        /// </summary>
-        public readonly void WriteUTF8(string text)
-        {
-            using BinaryWriter writer = new(4);
-            writer.WriteUTF8(text);
-            Write(writer.AsSpan());
-        }
-
-        /// <summary>
-        /// Appends the given bytes.
-        /// </summary>
-        public readonly void Write(USpan<byte> bytes)
-        {
-            USpan<BinaryData> array = entity.GetArray<BinaryData>();
-            array = entity.ResizeArray<BinaryData>(bytes.Length + array.Length);
-            bytes.CopyTo(array.As<byte>());
+            return this.GetSourceAddress().ToString(buffer);
         }
     }
 }

@@ -11,9 +11,9 @@ namespace Data.Tests
             using World world = CreateWorld();
             DataSource data = new(world, "hello", "data");
 
-            Assert.That(data.Address.ToString(), Is.EqualTo("hello"));
+            Assert.That(data.GetSourceAddress().ToString(), Is.EqualTo("hello"));
 
-            using BinaryReader reader = new(data.Bytes);
+            using BinaryReader reader = data.CreateBinaryReader();
             USpan<char> buffer = stackalloc char[128];
             uint length = reader.ReadUTF8(buffer);
 
