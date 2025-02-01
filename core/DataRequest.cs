@@ -2,8 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
 using Unmanaged;
 using Worlds;
 
@@ -28,11 +28,12 @@ namespace Data
             }
         }
 
-        public readonly USpan<byte> Data
+        public readonly USpan<byte> Bytes
         {
             get
             {
-                ThrowIfDataNotAvailable();
+                ThrowIfNotLoaded();
+
                 return entity.GetArray<BinaryData>().As<byte>();
             }
         }
@@ -44,14 +45,8 @@ namespace Data
         {
             get
             {
-                if (entity.TryGetComponent(out IsData data))
-                {
-                    return data.version == entity.GetComponent<IsDataRequest>().version;
-                }
-                else
-                {
-                    return false;
-                }
+                ref IsDataRequest component = ref entity.GetComponent<IsDataRequest>();
+                return component.status == RequestStatus.Loaded;
             }
         }
 
@@ -71,29 +66,24 @@ namespace Data
         }
 #endif
 
-        public DataRequest(World world, uint existingEntity)
+        public DataRequest(World world, USpan<char> address, TimeSpan timeout = default)
         {
-            this.entity = new(world, existingEntity);
+            entity = new Entity<IsDataRequest>(world, new IsDataRequest(address, RequestStatus.Submitted, timeout));
         }
 
-        public DataRequest(World world, USpan<char> address)
+        public DataRequest(World world, Address address, TimeSpan timeout = default)
         {
-            entity = new Entity<IsDataRequest>(world, new IsDataRequest(address));
+            entity = new Entity<IsDataRequest>(world, new IsDataRequest(address, RequestStatus.Submitted, timeout));
         }
 
-        public DataRequest(World world, Address address)
+        public DataRequest(World world, string address, TimeSpan timeout = default)
         {
-            entity = new Entity<IsDataRequest>(world, new IsDataRequest(address));
+            entity = new Entity<IsDataRequest>(world, new IsDataRequest(address, RequestStatus.Submitted, timeout));
         }
 
-        public DataRequest(World world, string address)
+        public DataRequest(World world, IEnumerable<char> address, TimeSpan timeout = default)
         {
-            entity = new Entity<IsDataRequest>(world, new IsDataRequest(address));
-        }
-
-        public DataRequest(World world, IEnumerable<char> address)
-        {
-            entity = new Entity<IsDataRequest>(world, new IsDataRequest(address));
+            entity = new Entity<IsDataRequest>(world, new IsDataRequest(address, RequestStatus.Submitted, timeout));
         }
 
         public readonly void Dispose()
@@ -120,25 +110,6 @@ namespace Data
             }
         }
 
-        public readonly void SetAddress(Address address)
-        {
-            ref IsDataRequest component = ref entity.GetComponent<IsDataRequest>();
-            component.address = address;
-            component.version++;
-        }
-
-        /// <summary>
-        /// Reads the data as a UTF8 string.
-        /// </summary>
-        /// <returns>Amount of <c>char</c> values copied.</returns>
-        public readonly uint CopyDataAsUTF8To(USpan<char> buffer)
-        {
-            ThrowIfDataNotAvailable();
-
-            using BinaryReader reader = new(Data);
-            return reader.ReadUTF8Span(buffer);
-        }
-
         public async Task UntilLoaded(Update action, CancellationToken cancellation = default)
         {
             World world = entity.GetWorld();
@@ -149,7 +120,7 @@ namespace Data
         }
 
         [Conditional("DEBUG")]
-        public void ThrowIfDataNotAvailable()
+        public readonly void ThrowIfNotLoaded()
         {
             if (!IsLoaded)
             {

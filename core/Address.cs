@@ -6,7 +6,7 @@ namespace Data
 {
     public struct Address : IEquatable<Address>
     {
-        public FixedString value;
+        private FixedString value;
 
         public Address(FixedString value)
         {
@@ -186,11 +186,6 @@ namespace Data
         public static implicit operator Address(string value)
         {
             return new(value);
-        }
-
-        public static Address Get<T>() where T : unmanaged, IDataReference
-        {
-            return default(T).Value;
         }
     }
 }

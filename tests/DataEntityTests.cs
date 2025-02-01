@@ -15,7 +15,7 @@ namespace Data.Tests
 
             using BinaryReader reader = new(data.Bytes);
             USpan<char> buffer = stackalloc char[128];
-            uint length = reader.ReadUTF8Span(buffer);
+            uint length = reader.ReadUTF8(buffer);
 
             Assert.That(buffer.Slice(0, length).ToString(), Is.EqualTo("data"));
         }

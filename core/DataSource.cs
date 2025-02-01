@@ -61,7 +61,7 @@ namespace Data
             entity = new(world);
             entity.AddComponent(new IsDataSource(address));
             entity.CreateArray<BinaryData>();
-            Write(text);
+            WriteUTF8(text);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace Data
             entity = new(world);
             entity.AddComponent(new IsDataSource(address));
             entity.CreateArray<BinaryData>();
-            Write(text);
+            WriteUTF8(text);
         }
 
         public readonly void Dispose()
@@ -101,31 +101,31 @@ namespace Data
         /// <summary>
         /// Appends the given text as UTF8 formatted bytes.
         /// </summary>
-        public readonly void Write(USpan<char> text)
+        public readonly void WriteUTF8(USpan<char> text)
         {
             using BinaryWriter writer = new(4);
-            writer.WriteUTF8Text(text);
-            Write(writer.GetBytes());
+            writer.WriteUTF8(text);
+            Write(writer.AsSpan());
         }
 
         /// <summary>
         /// Appends the given text as UTF8 formatted bytes.
         /// </summary>
-        public readonly void Write(FixedString text)
+        public readonly void WriteUTF8(FixedString text)
         {
             using BinaryWriter writer = new(4);
-            writer.WriteUTF8Text(text);
-            Write(writer.GetBytes());
+            writer.WriteUTF8(text);
+            Write(writer.AsSpan());
         }
 
         /// <summary>
         /// Appends the given text as UTF8 formatted bytes.
         /// </summary>
-        public readonly void Write(string text)
+        public readonly void WriteUTF8(string text)
         {
             using BinaryWriter writer = new(4);
-            writer.WriteUTF8Text(text);
-            Write(writer.GetBytes());
+            writer.WriteUTF8(text);
+            Write(writer.AsSpan());
         }
 
         /// <summary>
