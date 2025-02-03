@@ -10,7 +10,7 @@ namespace Data
     /// <summary>
     /// An entity that will contain data loaded from its address.
     /// </summary>
-    public readonly partial struct DataRequest : IDataRequest
+    public readonly partial struct DataRequest : IEntity
     {
         public readonly Address Address => GetComponent<IsDataRequest>().address;
         public readonly bool IsLoaded => GetComponent<IsDataRequest>().status == RequestStatus.Loaded;

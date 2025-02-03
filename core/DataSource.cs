@@ -8,7 +8,7 @@ namespace Data
     /// Represents a span of <see cref="byte"/> that can be found with
     /// a <see cref="DataRequest"/>.
     /// </summary>
-    public readonly partial struct DataSource : IDataSource
+    public readonly partial struct DataSource : IEntity
     {
         public readonly Address Address => GetComponent<IsDataSource>().address;
         public readonly USpan<byte> Bytes => GetArray<BinaryData>().As<byte>();
