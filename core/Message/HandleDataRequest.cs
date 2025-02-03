@@ -4,17 +4,30 @@ using Worlds;
 
 namespace Data.Messages
 {
-    public struct HandleDataRequest
+    public readonly struct HandleDataRequest
     {
         public readonly Entity entity;
-        public IsDataRequest request;
+        public readonly FixedString address;
+        public readonly bool loaded;
 
         public readonly USpan<byte> Bytes => entity.GetArray<BinaryData>().As<byte>();
 
-        public HandleDataRequest(Entity entity, IsDataRequest request)
+        public HandleDataRequest(Entity entity, FixedString address)
         {
             this.entity = entity;
-            this.request = request;
+            this.address = address;
+        }
+
+        public HandleDataRequest(Entity entity, FixedString address, bool loaded)
+        {
+            this.entity = entity;
+            this.address = address;
+            this.loaded = loaded;
+        }
+
+        public readonly HandleDataRequest BecomeLoaded()
+        {
+            return new HandleDataRequest(entity, address, true);
         }
     }
 }
