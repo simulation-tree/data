@@ -2,7 +2,7 @@
 
 namespace Data
 {
-    public interface IDataSource : IEntity
+    public interface IDataRequest : IEntity
     {
     }
 }

@@ -6,7 +6,9 @@ namespace Data
 {
     public struct Address : IEquatable<Address>
     {
-        public FixedString value;
+        private FixedString value;
+
+        public readonly byte Length => value.Length;
 
         public Address(FixedString value)
         {
@@ -126,6 +128,36 @@ namespace Data
             return true;
         }
 
+        public readonly uint IndexOf(char character)
+        {
+            return value.IndexOf(character);
+        }
+
+        public readonly uint LastIndexOf(char character)
+        {
+            return value.LastIndexOf(character);
+        }
+
+        public readonly bool TryIndexOf(char character, out uint index)
+        {
+            return value.TryIndexOf(character, out index);
+        }
+
+        public readonly bool TryLastIndexOf(char character, out uint index)
+        {
+            return value.TryLastIndexOf(character, out index);
+        }
+
+        public readonly Address Slice(uint start, uint length)
+        {
+            return new(value.Slice(start, length));
+        }
+
+        public readonly Address Slice(uint start)
+        {
+            return new(value.Slice(start));
+        }
+
         public readonly bool Matches(string other)
         {
             USpan<char> buffer = stackalloc char[other.Length];
@@ -188,9 +220,9 @@ namespace Data
             return new(value);
         }
 
-        public static Address Get<T>() where T : unmanaged, IDataReference
+        public static implicit operator FixedString(Address address)
         {
-            return default(T).Value;
+            return address.value;
         }
     }
 }

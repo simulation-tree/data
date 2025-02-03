@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading.Tasks;
-using System.Threading;
 using Unmanaged;
 using Worlds;
 
@@ -12,93 +10,49 @@ namespace Data
     /// <summary>
     /// An entity that will contain data loaded from its address.
     /// </summary>
-    public readonly struct DataRequest : IEntity
+    public readonly partial struct DataRequest : IDataRequest
     {
-        private readonly Entity entity;
+        public readonly Address Address => GetComponent<IsDataRequest>().address;
+        public readonly bool IsLoaded => GetComponent<IsDataRequest>().status == RequestStatus.Loaded;
 
-        /// <summary>
-        /// Address that this data request is looking for.
-        /// </summary>
-        public readonly Address Address
+        public readonly USpan<byte> Bytes
         {
             get
             {
-                ref IsDataRequest component = ref entity.GetComponent<IsDataRequest>();
-                return component.address;
+                ThrowIfNotLoaded();
+
+                return GetArray<BinaryData>().As<byte>();
             }
         }
-
-        public readonly USpan<byte> Data
-        {
-            get
-            {
-                ThrowIfDataNotAvailable();
-                return entity.GetArray<BinaryData>().As<byte>();
-            }
-        }
-
-        /// <summary>
-        /// Checks if the data has been loaded.
-        /// </summary>
-        public readonly bool IsLoaded
-        {
-            get
-            {
-                if (entity.TryGetComponent(out IsData data))
-                {
-                    return data.version == entity.GetComponent<IsDataRequest>().version;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-
-        readonly uint IEntity.Value => entity.value;
-        readonly World IEntity.World => entity.world;
 
         readonly void IEntity.Describe(ref Archetype archetype)
         {
             archetype.AddComponentType<IsDataRequest>();
+            archetype.AddArrayType<BinaryData>();
         }
 
-#if NET
-        [Obsolete("Default constructor not supported", true)]
-        public DataRequest()
+        public DataRequest(World world, USpan<char> address, TimeSpan timeout = default)
         {
-            throw new NotSupportedException();
-        }
-#endif
-
-        public DataRequest(World world, uint existingEntity)
-        {
-            this.entity = new(world, existingEntity);
+            this.world = world;
+            value = world.CreateEntity(new IsDataRequest(address, RequestStatus.Submitted, timeout));
         }
 
-        public DataRequest(World world, USpan<char> address)
+        public DataRequest(World world, Address address, TimeSpan timeout = default)
         {
-            entity = new Entity<IsDataRequest>(world, new IsDataRequest(address));
+            this.world = world;
+            value = world.CreateEntity(new IsDataRequest(address, RequestStatus.Submitted, timeout));
         }
 
-        public DataRequest(World world, Address address)
+        public DataRequest(World world, string address, TimeSpan timeout = default)
         {
-            entity = new Entity<IsDataRequest>(world, new IsDataRequest(address));
+            this.world = world;
+            value = world.CreateEntity(new IsDataRequest(address, RequestStatus.Submitted, timeout));
         }
 
-        public DataRequest(World world, string address)
+        public DataRequest(World world, IEnumerable<char> address, TimeSpan timeout = default)
         {
-            entity = new Entity<IsDataRequest>(world, new IsDataRequest(address));
-        }
-
-        public DataRequest(World world, IEnumerable<char> address)
-        {
-            entity = new Entity<IsDataRequest>(world, new IsDataRequest(address));
-        }
-
-        public readonly void Dispose()
-        {
-            entity.Dispose();
+            this.world = world;
+            value = world.CreateEntity(new IsDataRequest(address, RequestStatus.Submitted, timeout));
         }
 
         public readonly override string ToString()
@@ -110,7 +64,7 @@ namespace Data
         {
             if (IsLoaded)
             {
-                data = entity.GetArray<BinaryData>().As<byte>();
+                data = Bytes;
                 return true;
             }
             else
@@ -120,46 +74,20 @@ namespace Data
             }
         }
 
-        public readonly void SetAddress(Address address)
+        public readonly BinaryReader CreateBinaryReader()
         {
-            ref IsDataRequest component = ref entity.GetComponent<IsDataRequest>();
-            component.address = address;
-            component.version++;
-        }
+            ThrowIfNotLoaded();
 
-        /// <summary>
-        /// Reads the data as a UTF8 string.
-        /// </summary>
-        /// <returns>Amount of <c>char</c> values copied.</returns>
-        public readonly uint CopyDataAsUTF8To(USpan<char> buffer)
-        {
-            ThrowIfDataNotAvailable();
-
-            using BinaryReader reader = new(Data);
-            return reader.ReadUTF8Span(buffer);
-        }
-
-        public async Task UntilLoaded(Update action, CancellationToken cancellation = default)
-        {
-            World world = entity.GetWorld();
-            while (!IsLoaded)
-            {
-                await action(world, cancellation);
-            }
+            return new(Bytes);
         }
 
         [Conditional("DEBUG")]
-        public void ThrowIfDataNotAvailable()
+        private readonly void ThrowIfNotLoaded()
         {
             if (!IsLoaded)
             {
-                throw new InvalidOperationException($"Data not yet available on `{entity.GetEntityValue()}`");
+                throw new InvalidOperationException($"Data entity `{value}` at address `{Address}` has not been loaded");
             }
-        }
-
-        public static implicit operator Entity(DataRequest request)
-        {
-            return request.entity;
         }
     }
 }
