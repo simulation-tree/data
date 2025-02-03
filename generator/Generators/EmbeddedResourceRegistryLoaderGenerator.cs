@@ -25,7 +25,7 @@ namespace Data.Generator
         {
             string? assemblyName = compilation.AssemblyName;
             SourceBuilder builder = new();
-            builder.AppendLine("using Types;");
+            builder.AppendLine("using Data;");
             builder.AppendLine();
 
             if (assemblyName is not null)
@@ -64,10 +64,7 @@ namespace Data.Generator
 
                         if (type.HasInterface("Data.IEmbeddedResourceBank"))
                         {
-                            builder.Append("EmbeddedResourceRegistry.Load<");
-                            builder.Append(type.GetFullTypeName());
-                            builder.Append(">();");
-                            builder.AppendLine();
+                            AppendRegistration(builder, type);
                         }
                     }
                 }
@@ -85,7 +82,10 @@ namespace Data.Generator
 
         private static void AppendRegistration(SourceBuilder builder, ITypeSymbol type)
         {
-            builder.AppendLine($"EmbeddedAddress.Register<{GetFullTypeName(type)}>();");
+            builder.Append("EmbeddedResourceRegistry.Load<");
+            builder.Append(GetFullTypeName(type));
+            builder.Append(">();");
+            builder.AppendLine();
         }
 
         private static string GetFullTypeName(ITypeSymbol type)

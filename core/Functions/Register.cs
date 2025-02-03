@@ -15,5 +15,11 @@ namespace Data.Functions
         {
             function(address);
         }
+
+        public readonly void Invoke<T>() where T : unmanaged, IEmbeddedResource
+        {
+            T template = default;
+            function(template.Address);
+        }
     }
 }

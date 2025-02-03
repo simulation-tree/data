@@ -39,5 +39,10 @@ namespace Data.Components
             this.status = status;
             this.timeout = timeout;
         }
+
+        public readonly IsDataRequest BecomeLoaded()
+        {
+            return new(address, RequestStatus.Loaded, timeout);
+        }
     }
 }

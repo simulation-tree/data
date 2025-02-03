@@ -1,6 +1,7 @@
 ﻿using Data.Components;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Unmanaged;
 using Worlds;
 
@@ -9,61 +10,61 @@ namespace Data
     /// <summary>
     /// An entity that will contain data loaded from its address.
     /// </summary>
-    public readonly struct DataRequest : IDataRequest
+    public readonly partial struct DataRequest : IDataRequest
     {
-        private readonly Entity entity;
+        public readonly Address Address => GetComponent<IsDataRequest>().address;
+        public readonly bool IsLoaded => GetComponent<IsDataRequest>().status == RequestStatus.Loaded;
 
-        readonly uint IEntity.Value => entity.value;
-        readonly World IEntity.World => entity.world;
+        public readonly USpan<byte> Bytes
+        {
+            get
+            {
+                ThrowIfNotLoaded();
+
+                return GetArray<BinaryData>().As<byte>();
+            }
+        }
 
         readonly void IEntity.Describe(ref Archetype archetype)
         {
             archetype.AddComponentType<IsDataRequest>();
+            archetype.AddArrayType<BinaryData>();
         }
-
-#if NET
-        [Obsolete("Default constructor not supported", true)]
-        public DataRequest()
-        {
-            throw new NotSupportedException();
-        }
-#endif
 
         public DataRequest(World world, USpan<char> address, TimeSpan timeout = default)
         {
-            entity = new Entity<IsDataRequest>(world, new IsDataRequest(address, RequestStatus.Submitted, timeout));
+            this.world = world;
+            value = world.CreateEntity(new IsDataRequest(address, RequestStatus.Submitted, timeout));
         }
 
         public DataRequest(World world, Address address, TimeSpan timeout = default)
         {
-            entity = new Entity<IsDataRequest>(world, new IsDataRequest(address, RequestStatus.Submitted, timeout));
+            this.world = world;
+            value = world.CreateEntity(new IsDataRequest(address, RequestStatus.Submitted, timeout));
         }
 
         public DataRequest(World world, string address, TimeSpan timeout = default)
         {
-            entity = new Entity<IsDataRequest>(world, new IsDataRequest(address, RequestStatus.Submitted, timeout));
+            this.world = world;
+            value = world.CreateEntity(new IsDataRequest(address, RequestStatus.Submitted, timeout));
         }
 
         public DataRequest(World world, IEnumerable<char> address, TimeSpan timeout = default)
         {
-            entity = new Entity<IsDataRequest>(world, new IsDataRequest(address, RequestStatus.Submitted, timeout));
-        }
-
-        public readonly void Dispose()
-        {
-            entity.Dispose();
+            this.world = world;
+            value = world.CreateEntity(new IsDataRequest(address, RequestStatus.Submitted, timeout));
         }
 
         public readonly override string ToString()
         {
-            return this.GetRequestAddress().ToString();
+            return Address.ToString();
         }
 
         public readonly bool TryGetData(out USpan<byte> data)
         {
-            if (this.IsLoaded())
+            if (IsLoaded)
             {
-                data = this.GetBytes();
+                data = Bytes;
                 return true;
             }
             else
@@ -73,9 +74,20 @@ namespace Data
             }
         }
 
-        public static implicit operator Entity(DataRequest request)
+        public readonly BinaryReader CreateBinaryReader()
         {
-            return request.entity;
+            ThrowIfNotLoaded();
+
+            return new(Bytes);
+        }
+
+        [Conditional("DEBUG")]
+        private readonly void ThrowIfNotLoaded()
+        {
+            if (!IsLoaded)
+            {
+                throw new InvalidOperationException($"Data entity `{value}` at address `{Address}` has not been loaded");
+            }
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Data.Components;
-using System;
 using Unmanaged;
 using Worlds;
 
@@ -9,35 +8,25 @@ namespace Data
     /// Represents a span of <see cref="byte"/> that can be found with
     /// a <see cref="DataRequest"/>.
     /// </summary>
-    public readonly struct DataSource : IDataSource
+    public readonly partial struct DataSource : IDataSource
     {
-        private readonly Entity entity;
-
-        readonly uint IEntity.Value => entity.value;
-        readonly World IEntity.World => entity.world;
+        public readonly Address Address => GetComponent<IsDataSource>().address;
+        public readonly USpan<byte> Bytes => GetArray<BinaryData>().As<byte>();
 
         readonly void IEntity.Describe(ref Archetype archetype)
         {
             archetype.AddComponentType<IsDataSource>();
-            archetype.AddArrayElementType<BinaryData>();
+            archetype.AddArrayType<BinaryData>();
         }
-
-#if NET
-        [Obsolete("Default constructor not supported.", true)]
-        public DataSource()
-        {
-            throw new NotSupportedException();
-        }
-#endif
 
         /// <summary>
         /// Creates an empty data source.
         /// </summary>
         public DataSource(World world, Address address)
         {
-            entity = new(world);
-            entity.AddComponent(new IsDataSource(address));
-            entity.CreateArray<BinaryData>();
+            this.world = world;
+            value = world.CreateEntity(new IsDataSource(address));
+            world.CreateArray<BinaryData>(value);
         }
 
         /// <summary>
@@ -45,9 +34,9 @@ namespace Data
         /// </summary>
         public DataSource(World world, Address address, USpan<byte> bytes)
         {
-            entity = new(world);
-            entity.AddComponent(new IsDataSource(address));
-            entity.CreateArray(bytes.As<BinaryData>());
+            this.world = world;
+            value = world.CreateEntity(new IsDataSource(address));
+            world.CreateArray(value, bytes.As<BinaryData>());
         }
 
         /// <summary>
@@ -55,10 +44,10 @@ namespace Data
         /// </summary>
         public DataSource(World world, Address address, USpan<char> text)
         {
-            entity = new(world);
-            entity.AddComponent(new IsDataSource(address));
-            entity.CreateArray<BinaryData>();
-            this.WriteUTF8(text);
+            this.world = world;
+            value = world.CreateEntity(new IsDataSource(address));
+            world.CreateArray<BinaryData>(value);
+            WriteUTF8(text);
         }
 
         /// <summary>
@@ -66,15 +55,10 @@ namespace Data
         /// </summary>
         public DataSource(World world, Address address, string text)
         {
-            entity = new(world);
-            entity.AddComponent(new IsDataSource(address));
-            entity.CreateArray<BinaryData>();
-            this.WriteUTF8(text);
-        }
-
-        public readonly void Dispose()
-        {
-            entity.Dispose();
+            this.world = world;
+            value = world.CreateEntity(new IsDataSource(address));
+            world.CreateArray<BinaryData>(value);
+            WriteUTF8(text);
         }
 
         public readonly override string ToString()
@@ -86,7 +70,52 @@ namespace Data
 
         public readonly uint ToString(USpan<char> buffer)
         {
-            return this.GetSourceAddress().ToString(buffer);
+            return Address.ToString(buffer);
+        }
+
+        /// <summary>
+        /// Appends the given text as UTF8 formatted bytes.
+        /// </summary>
+        public readonly void WriteUTF8(USpan<char> text)
+        {
+            using BinaryWriter writer = new(4);
+            writer.WriteUTF8(text);
+            Write(writer.AsSpan());
+        }
+
+        /// <summary>
+        /// Appends the given text as UTF8 formatted bytes.
+        /// </summary>
+        public readonly void WriteUTF8(FixedString text)
+        {
+            using BinaryWriter writer = new(4);
+            writer.WriteUTF8(text);
+            Write(writer.AsSpan());
+        }
+
+        /// <summary>
+        /// Appends the given text as UTF8 formatted bytes.
+        /// </summary>
+        public readonly void WriteUTF8(string text)
+        {
+            using BinaryWriter writer = new(4);
+            writer.WriteUTF8(text);
+            Write(writer.AsSpan());
+        }
+
+        /// <summary>
+        /// Appends the given bytes.
+        /// </summary>
+        public readonly void Write(USpan<byte> bytes)
+        {
+            uint length = GetArrayLength<BinaryData>();
+            USpan<BinaryData> array = ResizeArray<BinaryData>(bytes.Length + length);
+            bytes.CopyTo(array.As<byte>());
+        }
+
+        public readonly BinaryReader CreateBinaryReader()
+        {
+            return new(Bytes);
         }
     }
 }

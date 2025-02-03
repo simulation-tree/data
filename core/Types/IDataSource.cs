@@ -1,6 +1,8 @@
-﻿namespace Data
+﻿using Worlds;
+
+namespace Data
 {
-    public interface IDataSource : IData
+    public interface IDataSource : IEntity
     {
     }
 }

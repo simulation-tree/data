@@ -2,7 +2,7 @@
 
 namespace Data
 {
-    public interface IEmbeddedResourcesBank
+    public interface IEmbeddedResourceBank
     {
         void Load(Register register);
     }

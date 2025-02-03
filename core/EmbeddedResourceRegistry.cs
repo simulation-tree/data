@@ -9,10 +9,11 @@ namespace Data
     public static class EmbeddedResourceRegistry
     {
         private static readonly List<EmbeddedResource> all = new();
+        private static readonly List<Address> addresses = new();
 
         public static IReadOnlyList<EmbeddedResource> All => all;
 
-        public static void Load<T>() where T : unmanaged, IEmbeddedResourcesBank
+        public static void Load<T>() where T : unmanaged, IEmbeddedResourceBank
         {
             T template = default;
             Assembly assembly = typeof(T).Assembly;
@@ -27,13 +28,14 @@ namespace Data
         public static void Register(Assembly assembly, Address address)
         {
             all.Add(new EmbeddedResource(assembly, address));
+            addresses.Add(address);
         }
 
         private static bool TryGetMatch(Address address, out int index)
         {
-            for (int i = 0; i < all.Count; i++)
+            for (int i = 0; i < addresses.Count; i++)
             {
-                if (all[i].address.Matches(address))
+                if (addresses[i].Matches(address))
                 {
                     index = i;
                     return true;
@@ -65,6 +67,18 @@ namespace Data
         {
             TryGetMatch(address, out int index);
             return all[index];
+        }
+
+        public static Address Get<T>() where T : unmanaged, IEmbeddedResource
+        {
+            T template = default;
+            Address address = template.Address;
+            if (!addresses.Contains(address))
+            {
+                Register(typeof(T).Assembly, address);
+            }
+
+            return address;
         }
     }
 }

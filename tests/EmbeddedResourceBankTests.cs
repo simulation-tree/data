@@ -22,9 +22,9 @@ namespace Data.Tests
             Assert.That(buffer.Slice(0, length).ToString(), Is.EqualTo("this is some data, yo"));
         }
 
-        public readonly struct CustomResourceBank : IEmbeddedResourcesBank
+        public readonly struct CustomResourceBank : IEmbeddedResourceBank
         {
-            void IEmbeddedResourcesBank.Load(Register register)
+            void IEmbeddedResourceBank.Load(Register register)
             {
                 register.Invoke("Assets/data1.txt");
             }
