@@ -11,18 +11,18 @@ namespace Data.Messages
     /// </summary>
     public readonly struct LoadData : IDisposable
     {
-        public readonly Entity entity;
-        public readonly FixedString address;
+        public readonly World world;
+        public readonly Address address;
 
-        private readonly Array<byte> data;
+        private readonly Array<byte> bytes;
 
         /// <summary>
         /// Checks if this message was completed.
         /// <para>
-        /// If so, it should also be disposed.
+        /// If so, it must be disposed after reading its bytes.
         /// </para>
         /// </summary>
-        public readonly bool IsLoaded => !data.IsDisposed;
+        public readonly bool IsLoaded => !bytes.IsDisposed;
 
         /// <summary>
         /// Loaded bytes.
@@ -33,34 +33,55 @@ namespace Data.Messages
             {
                 ThrowIfNotLoaded();
 
-                return data.AsSpan();
+                return bytes.AsSpan();
             }
         }
 
-        public LoadData(Entity entity, FixedString address)
+        /// <summary>
+        /// Creates a message that requests for data from the given <paramref name="address"/>.
+        /// <para>
+        /// Once loaded, it must be disposed.
+        /// </para>
+        /// </summary>
+        public LoadData(World world, Address address)
         {
-            this.entity = entity;
+            this.world = world;
             this.address = address;
-            this.data = default;
+            this.bytes = default;
         }
 
-        public LoadData(Entity entity, FixedString address, USpan<byte> data)
+        /// <summary>
+        /// Creates a message that requests for data from the given <paramref name="address"/>.
+        /// <para>
+        /// Once loaded, it must be disposed.
+        /// </para>
+        /// </summary>
+        public LoadData(World world, FixedString address)
         {
-            this.entity = entity;
-            this.address = address;
-            this.data = new(data);
+            this.world = world;
+            this.address = new(address);
+            this.bytes = default;
         }
 
-        public readonly LoadData BecomeLoaded(USpan<byte> data)
+        private LoadData(World world, Address address, USpan<byte> bytes)
         {
-            return new LoadData(entity, address, data);
+            this.world = world;
+            this.address = address;
+            this.bytes = new(bytes);
+        }
+
+        public readonly LoadData BecomeLoaded(USpan<byte> bytes)
+        {
+            ThrowIfAlreadyLoaded();
+
+            return new LoadData(world, address, bytes);
         }
 
         public readonly void Dispose()
         {
             ThrowIfNotLoaded();
 
-            data.Dispose();
+            bytes.Dispose();
         }
 
         [Conditional("DEBUG")]
@@ -69,6 +90,15 @@ namespace Data.Messages
             if (!IsLoaded)
             {
                 throw new InvalidOperationException($"Data for `{address}` is not available");
+            }
+        }
+
+        [Conditional("DEBUG")]
+        private readonly void ThrowIfAlreadyLoaded()
+        {
+            if (IsLoaded)
+            {
+                throw new InvalidOperationException($"Data for `{address}` is already loaded");
             }
         }
     }
