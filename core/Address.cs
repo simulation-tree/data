@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Unmanaged;
 
 namespace Data
 {
+    [SkipLocalsInit]
     public struct Address : IEquatable<Address>
     {
         private FixedString value;
@@ -57,9 +59,9 @@ namespace Data
 
         public readonly bool Equals(USpan<char> other)
         {
-            USpan<char> self = stackalloc char[(int)FixedString.Capacity];
-            uint length = value.CopyTo(self);
-            for (uint i = 0; i < length; i++)
+            USpan<char> self = stackalloc char[value.Length];
+            value.CopyTo(self);
+            for (uint i = 0; i < self.Length; i++)
             {
                 char s = self[i];
                 char o = other[i];
@@ -93,13 +95,14 @@ namespace Data
 
         public readonly bool EndsWith(USpan<char> other)
         {
-            USpan<char> self = stackalloc char[(int)FixedString.Capacity];
-            uint length = value.CopyTo(self);
+            USpan<char> self = stackalloc char[value.Length];
+            value.CopyTo(self);
             for (uint i = other.Length - 1; i != uint.MaxValue; i--)
             {
-                char s = self[length - 1];
+                char s = self[self.Length - 1];
                 char o = other[i];
-                length--;
+                self = self.Slice(0, self.Length - 1);
+
                 if (s != o)
                 {
                     if (s == '/' && (o == '\\' || o == '.'))
@@ -171,15 +174,15 @@ namespace Data
 
         public readonly bool Matches(Address other)
         {
-            USpan<char> buffer = stackalloc char[(int)FixedString.Capacity];
-            uint length = other.value.CopyTo(buffer);
-            return Matches(buffer.Slice(0, length));
+            USpan<char> buffer = stackalloc char[other.value.Length];
+            other.value.CopyTo(buffer);
+            return Matches(buffer);
         }
 
         public readonly bool Matches(USpan<char> other)
         {
-            USpan<char> self = stackalloc char[(int)FixedString.Capacity];
-            uint length = value.CopyTo(self);
+            USpan<char> self = stackalloc char[value.Length];
+            value.CopyTo(self);
             if (other[0] == '*')
             {
                 //todo: fault: what about * in the middle? or .. tokens?
@@ -192,11 +195,11 @@ namespace Data
                     other = other.Slice(1);
                 }
 
-                return new Address(self.Slice(0, length)).EndsWith(other);
+                return new Address(self).EndsWith(other);
             }
             else
             {
-                return new Address(self.Slice(0, length)).Equals(other);
+                return new Address(self).Equals(other);
             }
         }
 

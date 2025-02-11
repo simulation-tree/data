@@ -63,7 +63,7 @@ namespace Data
 
         public readonly override string ToString()
         {
-            USpan<char> buffer = stackalloc char[(int)FixedString.Capacity];
+            USpan<char> buffer = stackalloc char[FixedString.Capacity];
             uint length = ToString(buffer);
             return buffer.Slice(0, length).ToString();
         }
