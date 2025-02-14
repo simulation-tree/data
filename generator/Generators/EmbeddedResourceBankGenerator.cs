@@ -54,7 +54,7 @@ namespace Data.Generator
 
         public static bool TryGenerate(IReadOnlyCollection<ITypeSymbol> types, out string typeName, out string sourceCode)
         {
-            HashSet<ITypeSymbol> validTypes = new();
+            HashSet<ITypeSymbol> validTypes = [];
             foreach (ITypeSymbol type in types)
             {
                 if (type is INamedTypeSymbol namedType)
