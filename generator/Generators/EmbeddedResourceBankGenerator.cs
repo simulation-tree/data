@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Threading;
@@ -11,8 +11,6 @@ namespace Data.Generator
     [Generator(LanguageNames.CSharp)]
     public class EmbeddedResourceBankGenerator : IIncrementalGenerator
     {
-        public const string TypeNameFormat = "{0}DataBank";
-
         void IIncrementalGenerator.Initialize(IncrementalGeneratorInitializationContext context)
         {
             IncrementalValuesProvider<ITypeSymbol?> types = context.SyntaxProvider.CreateSyntaxProvider(Predicate, Transform);
@@ -30,10 +28,9 @@ namespace Data.Generator
                 }
             }
 
-            if (types.Count > 0)
+            if (TryGenerate(types, out string typeName, out string sourceCode))
             {
-                string source = Generate(types, out string typeName);
-                context.AddSource($"{typeName}.generated.cs", source);
+                context.AddSource($"{typeName}.generated.cs", sourceCode);
             }
         }
 
@@ -72,7 +69,7 @@ namespace Data.Generator
 
             if (type.IsUnmanaged())
             {
-                if (type.HasInterface("Data.IEmbeddedResource"))
+                if (type.HasInterface(Constants.DataInterface))
                 {
                     return type;
                 }
@@ -81,9 +78,22 @@ namespace Data.Generator
             return null;
         }
 
-        public static string Generate(IReadOnlyList<ITypeSymbol> types, out string typeName)
+        public static bool TryGenerate(IReadOnlyCollection<ITypeSymbol> types, out string typeName, out string sourceCode)
         {
-            string? assemblyName = types[0].ContainingAssembly?.Name;
+            if (types.Count == 0)
+            {
+                typeName = string.Empty;
+                sourceCode = string.Empty;
+                return false;
+            }
+
+            string? assemblyName = null;
+            foreach (ITypeSymbol type in types)
+            {
+                assemblyName = type.ContainingAssembly?.Name;
+                break;
+            }
+
             if (assemblyName is not null && assemblyName.EndsWith(".Core"))
             {
                 assemblyName = assemblyName.Substring(0, assemblyName.Length - 5);
@@ -103,24 +113,26 @@ namespace Data.Generator
                 source.BeginGroup();
             }
 
-            typeName = TypeNameFormat.Replace("{0}", assemblyName ?? "");
+            typeName = Constants.DataBankTypeName.Replace("{0}", assemblyName ?? "");
             typeName = typeName.Replace(".", "");
             source.Append("public readonly struct ");
             source.Append(typeName);
-            source.Append(" : IEmbeddedResourceBank");
+            source.Append(" : ");
+            source.Append(Constants.DataBankInterface);
             source.AppendLine();
 
             source.BeginGroup();
             {
-                source.AppendLine("readonly void IEmbeddedResourceBank.Load(Register function)");
+                source.Append("readonly void ");
+                source.Append(Constants.DataBankInterface);
+                source.Append(".Load(Register function)");
+                source.AppendLine();
+
                 source.BeginGroup();
                 {
-                    foreach (ITypeSymbol? type in types)
+                    foreach (ITypeSymbol type in types)
                     {
-                        if (type is not null)
-                        {
-                            AppendRegister(source, type);
-                        }
+                        AppendRegister(source, type);
                     }
                 }
                 source.EndGroup();
@@ -130,14 +142,16 @@ namespace Data.Generator
             if (assemblyName is not null)
             {
                 source.EndGroup();
+                typeName = $"{assemblyName}.{typeName}";
             }
 
-            return source.ToString();
+            sourceCode = source.ToString();
+            return true;
         }
 
         private static void AppendRegister(SourceBuilder source, ITypeSymbol type)
         {
-            source.Append("function.Invoke<");  
+            source.Append("function.Invoke<");
             source.Append(type.ToDisplayString());
             source.Append(">();");
             source.AppendLine();

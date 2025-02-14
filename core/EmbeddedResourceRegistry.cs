@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace Data
 {
     /// <summary>
-    /// Registry containing all known embedded resources.
+    /// Registry containing all known <see cref="EmbeddedResource"/>s.
     /// </summary>
     public static class EmbeddedResourceRegistry
     {
@@ -65,11 +66,22 @@ namespace Data
 
         public static EmbeddedResource Get(Address address)
         {
+            ThrowIfMissing(address);
+
             TryGetMatch(address, out int index);
             return all[index];
         }
 
-        public static Address Get<T>() where T : unmanaged, IEmbeddedResource
+        public static EmbeddedResource Get<T>() where T : unmanaged, IEmbeddedResource
+        {
+            T template = default;
+            Address address = template.Address;
+            ThrowIfMissing(address);
+
+            return Get(address);
+        }
+
+        public static Address GetAddress<T>() where T : unmanaged, IEmbeddedResource
         {
             T template = default;
             Address address = template.Address;
@@ -79,6 +91,15 @@ namespace Data
             }
 
             return address;
+        }
+
+        [Conditional("DEBUG")]
+        private static void ThrowIfMissing(Address address)
+        {
+            if (!Contains(address))
+            {
+                throw new KeyNotFoundException($"Embedded resource at address `{address}` could not be found");
+            }
         }
     }
 }

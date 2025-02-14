@@ -11,7 +11,7 @@ namespace Data
 
         private readonly GCHandle assembly;
 
-        public readonly Assembly Assembly => (Assembly)(assembly.Target ?? throw new System.InvalidOperationException("Assembly has been garbage collected, and is no longer available"));
+        public readonly Assembly Assembly => (Assembly)(assembly.Target ?? throw new InvalidOperationException("Assembly has been garbage collected, and is no longer available"));
 
         public EmbeddedResource(Assembly assembly, Address address)
         {

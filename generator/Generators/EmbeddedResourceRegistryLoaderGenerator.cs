@@ -1,4 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
+using System.Collections.Generic;
+using System.Linq;
 using Types;
 
 namespace Data.Generator
@@ -6,8 +8,6 @@ namespace Data.Generator
     [Generator(LanguageNames.CSharp)]
     public class EmbeddedResourceRegistryLoaderGenerator : IIncrementalGenerator
     {
-        private const string TypeName = "EmbeddedResourceRegistryLoader";
-
         void IIncrementalGenerator.Initialize(IncrementalGeneratorInitializationContext context)
         {
             context.RegisterSourceOutput(context.CompilationProvider, Generate);
@@ -17,15 +17,20 @@ namespace Data.Generator
         {
             if (compilation.GetEntryPoint(context.CancellationToken) is not null)
             {
-                context.AddSource($"{TypeName}.generated.cs", Generate(compilation));
+                IReadOnlyCollection<ITypeSymbol> types = compilation.GetAllTypes(false);
+                bool did = EmbeddedResourceBankGenerator.TryGenerate(types, out string typeName, out string _);
+                context.AddSource($"{Constants.LoaderTypeName}.generated.cs", Generate(compilation, typeName));
             }
         }
 
-        public static string Generate(Compilation compilation)
+        public static string Generate(Compilation compilation, string additionalDataBankName)
         {
             string? assemblyName = compilation.AssemblyName;
             SourceBuilder builder = new();
-            builder.AppendLine("using Data;");
+            builder.Append("using ");
+            builder.Append(Constants.ProjectNameSpace);
+            builder.Append(";");
+            builder.AppendLine();
             builder.AppendLine();
 
             if (assemblyName is not null)
@@ -36,9 +41,18 @@ namespace Data.Generator
                 builder.BeginGroup();
             }
 
-            builder.AppendLine($"internal static partial class {TypeName}");
+            builder.Append($"internal static partial class ");
+            builder.Append(Constants.LoaderTypeName);
+            builder.AppendLine();
+
             builder.BeginGroup();
             {
+                HashSet<string> dataBankNames = new();
+                if (!string.IsNullOrEmpty(additionalDataBankName))
+                {
+                    dataBankNames.Add(additionalDataBankName);
+                }
+
                 builder.AppendLine($"public static void Load()");
                 builder.BeginGroup();
                 {
@@ -62,10 +76,15 @@ namespace Data.Generator
                             }
                         }
 
-                        if (type.HasInterface("Data.IEmbeddedResourceBank"))
+                        if (type.HasInterface(Constants.DataBankInterface))
                         {
-                            AppendRegistration(builder, type);
+                            dataBankNames.Add(GetFullTypeName(type));
                         }
+                    }
+
+                    foreach (string dataBankName in dataBankNames)
+                    {
+                        AppendRegistration(builder, dataBankName);
                     }
                 }
                 builder.EndGroup();
@@ -80,10 +99,11 @@ namespace Data.Generator
             return builder.ToString();
         }
 
-        private static void AppendRegistration(SourceBuilder builder, ITypeSymbol type)
+        private static void AppendRegistration(SourceBuilder builder, string dataBankName)
         {
-            builder.Append("EmbeddedResourceRegistry.Load<");
-            builder.Append(GetFullTypeName(type));
+            builder.Append(Constants.RegistryName);
+            builder.Append(".Load<");
+            builder.Append(dataBankName);
             builder.Append(">();");
             builder.AppendLine();
         }
