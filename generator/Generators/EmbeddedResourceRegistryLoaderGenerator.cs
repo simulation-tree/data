@@ -1,6 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
-using System.Linq;
 using Types;
 
 namespace Data.Generator
@@ -18,7 +17,7 @@ namespace Data.Generator
             if (compilation.GetEntryPoint(context.CancellationToken) is not null)
             {
                 IReadOnlyCollection<ITypeSymbol> types = compilation.GetAllTypes(false);
-                bool did = EmbeddedResourceBankGenerator.TryGenerate(types, out string typeName, out string _);
+                EmbeddedResourceBankGenerator.TryGenerate(types, out string typeName, out string _);
                 context.AddSource($"{Constants.LoaderTypeName}.generated.cs", Generate(compilation, typeName));
             }
         }

@@ -49,38 +49,42 @@ namespace Data.Generator
                 return null;
             }
 
-            if (type is INamedTypeSymbol namedType)
-            {
-                if (namedType.IsGenericType)
-                {
-                    return null;
-                }
-            }
-
-            if (type.IsRefLikeType)
-            {
-                return null;
-            }
-
-            if (type.DeclaredAccessibility != Accessibility.Public && type.DeclaredAccessibility != Accessibility.Internal)
-            {
-                return null;
-            }
-
-            if (type.IsUnmanaged())
-            {
-                if (type.HasInterface(Constants.DataInterface))
-                {
-                    return type;
-                }
-            }
-
-            return null;
+            return type;
         }
 
         public static bool TryGenerate(IReadOnlyCollection<ITypeSymbol> types, out string typeName, out string sourceCode)
         {
-            if (types.Count == 0)
+            HashSet<ITypeSymbol> validTypes = new();
+            foreach (ITypeSymbol type in types)
+            {
+                if (type is INamedTypeSymbol namedType)
+                {
+                    if (namedType.IsGenericType)
+                    {
+                        continue;
+                    }
+                }
+
+                if (type.IsRefLikeType)
+                {
+                    continue;
+                }
+
+                if (type.DeclaredAccessibility != Accessibility.Public && type.DeclaredAccessibility != Accessibility.Internal)
+                {
+                    continue;
+                }
+
+                if (type.IsUnmanaged())
+                {
+                    if (type.HasInterface(Constants.DataInterface))
+                    {
+                        validTypes.Add(type);
+                    }
+                }
+            }
+
+            if (validTypes.Count == 0)
             {
                 typeName = string.Empty;
                 sourceCode = string.Empty;
@@ -88,7 +92,7 @@ namespace Data.Generator
             }
 
             string? assemblyName = null;
-            foreach (ITypeSymbol type in types)
+            foreach (ITypeSymbol type in validTypes)
             {
                 assemblyName = type.ContainingAssembly?.Name;
                 break;
@@ -130,7 +134,7 @@ namespace Data.Generator
 
                 source.BeginGroup();
                 {
-                    foreach (ITypeSymbol type in types)
+                    foreach (ITypeSymbol type in validTypes)
                     {
                         AppendRegister(source, type);
                     }
