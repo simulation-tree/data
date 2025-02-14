@@ -1,8 +1,5 @@
-﻿using Worlds;
-
-namespace Data.Components
+﻿namespace Data.Components
 {
-    [ArrayElement]
     public struct BinaryData
     {
         public byte value;

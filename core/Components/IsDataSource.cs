@@ -1,9 +1,7 @@
 ﻿using Unmanaged;
-using Worlds;
 
 namespace Data.Components
 {
-    [Component]
     public struct IsDataSource
     {
         public Address address;

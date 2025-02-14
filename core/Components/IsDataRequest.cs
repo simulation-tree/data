@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Unmanaged;
-using Worlds;
 
 namespace Data.Components
 {
-    [Component]
     public struct IsDataRequest
     {
         public readonly Address address;
