@@ -14,7 +14,7 @@ namespace Data.Messages
         public readonly World world;
         public readonly Address address;
 
-        private readonly Array<byte> bytes;
+        private readonly BinaryReader bytes;
 
         /// <summary>
         /// Checks if this message was completed.
@@ -33,7 +33,7 @@ namespace Data.Messages
             {
                 ThrowIfNotLoaded();
 
-                return bytes.AsSpan();
+                return bytes.GetBytes();
             }
         }
 
@@ -63,14 +63,14 @@ namespace Data.Messages
             this.bytes = default;
         }
 
-        private LoadData(World world, Address address, USpan<byte> bytes)
+        private LoadData(World world, Address address, BinaryReader bytes)
         {
             this.world = world;
             this.address = address;
-            this.bytes = new(bytes);
+            this.bytes = bytes;
         }
 
-        public readonly LoadData BecomeLoaded(USpan<byte> bytes)
+        public readonly LoadData BecomeLoaded(BinaryReader bytes)
         {
             ThrowIfAlreadyLoaded();
 
