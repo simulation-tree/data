@@ -31,5 +31,13 @@ namespace Data
             stream.Position = 0;
             return new(stream);
         }
+
+        /// <summary>
+        /// Retrieves the <see cref="Address"/> for <typeparamref name="T"/> data.
+        /// </summary>
+        public static Address GetAddress<T>() where T : unmanaged, IEmbeddedResource
+        {
+            return default(T).Address;
+        }
     }
 }

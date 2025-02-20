@@ -81,19 +81,6 @@ namespace Data
             return Get(address);
         }
 
-        public static Address GetAddress<T>() where T : unmanaged, IEmbeddedResource
-        {
-            //todo: maybe this should go into the EmbeddedResource type, and not have a TryGet pattern like here
-            T template = default;
-            Address address = template.Address;
-            if (!addresses.Contains(address))
-            {
-                Register(typeof(T).Assembly, address);
-            }
-
-            return address;
-        }
-
         [Conditional("DEBUG")]
         private static void ThrowIfMissing(Address address)
         {
