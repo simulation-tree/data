@@ -1,5 +1,4 @@
-﻿using Collections;
-using System;
+﻿using System;
 using System.Diagnostics;
 using Unmanaged;
 using Worlds;
@@ -14,15 +13,15 @@ namespace Data.Messages
         public readonly World world;
         public readonly Address address;
 
-        private readonly BinaryReader bytes;
+        private readonly ByteReader loadedData;
 
         /// <summary>
         /// Checks if this message was completed.
         /// <para>
-        /// If so, it must be disposed after reading its bytes.
+        /// If so, it must be disposed after reading its data.
         /// </para>
         /// </summary>
-        public readonly bool IsLoaded => !bytes.IsDisposed;
+        public readonly bool IsLoaded => !loadedData.IsDisposed;
 
         /// <summary>
         /// Loaded bytes.
@@ -33,7 +32,7 @@ namespace Data.Messages
             {
                 ThrowIfNotLoaded();
 
-                return bytes.GetBytes();
+                return loadedData.GetBytes();
             }
         }
 
@@ -47,7 +46,7 @@ namespace Data.Messages
         {
             this.world = world;
             this.address = address;
-            this.bytes = default;
+            this.loadedData = default;
         }
 
         /// <summary>
@@ -60,28 +59,28 @@ namespace Data.Messages
         {
             this.world = world;
             this.address = new(address);
-            this.bytes = default;
+            this.loadedData = default;
         }
 
-        private LoadData(World world, Address address, BinaryReader bytes)
+        private LoadData(World world, Address address, ByteReader loadedData)
         {
             this.world = world;
             this.address = address;
-            this.bytes = bytes;
-        }
-
-        public readonly LoadData BecomeLoaded(BinaryReader bytes)
-        {
-            ThrowIfAlreadyLoaded();
-
-            return new LoadData(world, address, bytes);
+            this.loadedData = loadedData;
         }
 
         public readonly void Dispose()
         {
             ThrowIfNotLoaded();
 
-            bytes.Dispose();
+            loadedData.Dispose();
+        }
+
+        public readonly LoadData BecomeLoaded(ByteReader loadedData)
+        {
+            ThrowIfAlreadyLoaded();
+
+            return new LoadData(world, address, loadedData);
         }
 
         [Conditional("DEBUG")]

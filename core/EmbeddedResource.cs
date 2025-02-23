@@ -22,7 +22,7 @@ namespace Data
         /// <summary>
         /// Creates a new binary reader with the contents of this embedded resource.
         /// </summary>
-        public readonly BinaryReader CreateBinaryReader()
+        public readonly ByteReader CreateBinaryReader()
         {
             Assembly assembly = Assembly;
             string[] names = assembly.GetManifestResourceNames();

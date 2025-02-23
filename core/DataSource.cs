@@ -78,7 +78,7 @@ namespace Data
         /// </summary>
         public readonly void WriteUTF8(USpan<char> text)
         {
-            using BinaryWriter writer = new(4);
+            using ByteWriter writer = new(4);
             writer.WriteUTF8(text);
             Write(writer.AsSpan());
         }
@@ -88,7 +88,7 @@ namespace Data
         /// </summary>
         public readonly void WriteUTF8(FixedString text)
         {
-            using BinaryWriter writer = new(4);
+            using ByteWriter writer = new(4);
             writer.WriteUTF8(text);
             Write(writer.AsSpan());
         }
@@ -98,7 +98,7 @@ namespace Data
         /// </summary>
         public readonly void WriteUTF8(string text)
         {
-            using BinaryWriter writer = new(4);
+            using ByteWriter writer = new(4);
             writer.WriteUTF8(text);
             Write(writer.AsSpan());
         }
@@ -113,7 +113,7 @@ namespace Data
             bytes.CopyTo(array.As<byte>());
         }
 
-        public readonly BinaryReader CreateBinaryReader()
+        public readonly ByteReader CreateBinaryReader()
         {
             return new(Bytes);
         }

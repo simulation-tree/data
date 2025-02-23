@@ -74,7 +74,7 @@ namespace Data
             }
         }
 
-        public readonly BinaryReader CreateBinaryReader()
+        public readonly ByteReader CreateBinaryReader()
         {
             ThrowIfNotLoaded();
 
