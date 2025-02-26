@@ -21,7 +21,7 @@ namespace Data
             {
                 ThrowIfNotLoaded();
 
-                return GetArray<BinaryData>().As<byte>();
+                return GetArray<BinaryData>().AsSpan<byte>();
             }
         }
 

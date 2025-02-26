@@ -1,4 +1,5 @@
-﻿using Data.Components;
+﻿using Collections.Generic;
+using Data.Components;
 using Unmanaged;
 using Worlds;
 
@@ -11,7 +12,7 @@ namespace Data
     public readonly partial struct DataSource : IEntity
     {
         public readonly Address Address => GetComponent<IsDataSource>().address;
-        public readonly USpan<byte> Bytes => GetArray<BinaryData>().As<byte>();
+        public readonly USpan<byte> Bytes => GetArray<BinaryData>().AsSpan<byte>();
 
         readonly void IEntity.Describe(ref Archetype archetype)
         {
@@ -108,9 +109,10 @@ namespace Data
         /// </summary>
         public readonly void Write(USpan<byte> bytes)
         {
-            uint length = GetArrayLength<BinaryData>();
-            USpan<BinaryData> array = ResizeArray<BinaryData>(bytes.Length + length);
-            bytes.CopyTo(array.As<byte>());
+            Array<BinaryData> array = GetArray<BinaryData>();
+            uint length = array.Length;
+            array.Length += bytes.Length;
+            bytes.CopyTo(array.AsSpan<byte>(length));
         }
 
         public readonly ByteReader CreateBinaryReader()
