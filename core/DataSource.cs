@@ -1,5 +1,4 @@
-﻿using Collections.Generic;
-using Data.Components;
+﻿using Data.Components;
 using Unmanaged;
 using Worlds;
 
@@ -64,9 +63,10 @@ namespace Data
 
         public readonly override string ToString()
         {
-            USpan<char> buffer = stackalloc char[FixedString.Capacity];
-            uint length = ToString(buffer);
-            return buffer.Slice(0, length).ToString();
+            Address address = Address;
+            USpan<char> buffer = stackalloc char[address.Length];
+            ToString(buffer);
+            return buffer.ToString();
         }
 
         public readonly uint ToString(USpan<char> buffer)
@@ -79,7 +79,7 @@ namespace Data
         /// </summary>
         public readonly void WriteUTF8(USpan<char> text)
         {
-            using ByteWriter writer = new(4);
+            using ByteWriter writer = new(text.Length * 3);
             writer.WriteUTF8(text);
             Write(writer.AsSpan());
         }
@@ -89,7 +89,7 @@ namespace Data
         /// </summary>
         public readonly void WriteUTF8(FixedString text)
         {
-            using ByteWriter writer = new(4);
+            using ByteWriter writer = new((uint)text.Length * 3);
             writer.WriteUTF8(text);
             Write(writer.AsSpan());
         }
@@ -99,7 +99,7 @@ namespace Data
         /// </summary>
         public readonly void WriteUTF8(string text)
         {
-            using ByteWriter writer = new(4);
+            using ByteWriter writer = new((uint)text.Length * 3);
             writer.WriteUTF8(text);
             Write(writer.AsSpan());
         }
@@ -109,7 +109,7 @@ namespace Data
         /// </summary>
         public readonly void Write(USpan<byte> bytes)
         {
-            Array<BinaryData> array = GetArray<BinaryData>();
+            Values<BinaryData> array = GetArray<BinaryData>();
             uint length = array.Length;
             array.Length += bytes.Length;
             bytes.CopyTo(array.AsSpan<byte>(length));

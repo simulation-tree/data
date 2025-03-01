@@ -101,7 +101,7 @@ namespace Data
             {
                 char s = self[self.Length - 1];
                 char o = other[i];
-                self = self.Slice(0, self.Length - 1);
+                self = self.GetSpan(self.Length - 1);
 
                 if (s != o)
                 {
