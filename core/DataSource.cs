@@ -87,7 +87,7 @@ namespace Data
         /// <summary>
         /// Appends the given text as UTF8 formatted bytes.
         /// </summary>
-        public readonly void WriteUTF8(FixedString text)
+        public readonly void WriteUTF8(ASCIIText256 text)
         {
             using ByteWriter writer = new((uint)text.Length * 3);
             writer.WriteUTF8(text);

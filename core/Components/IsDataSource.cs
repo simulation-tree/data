@@ -6,7 +6,7 @@ namespace Data.Components
     {
         public Address address;
 
-        public IsDataSource(FixedString address)
+        public IsDataSource(ASCIIText256 address)
         {
             this.address = new(address);
         }

@@ -55,7 +55,7 @@ namespace Data.Messages
         /// Once loaded, it must be disposed.
         /// </para>
         /// </summary>
-        public LoadData(World world, FixedString address)
+        public LoadData(World world, ASCIIText256 address)
         {
             this.world = world;
             this.address = new(address);

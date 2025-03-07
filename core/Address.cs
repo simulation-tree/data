@@ -8,11 +8,11 @@ namespace Data
     [SkipLocalsInit]
     public struct Address : IEquatable<Address>
     {
-        private FixedString value;
+        private ASCIIText256 value;
 
         public readonly byte Length => value.Length;
 
-        public Address(FixedString value)
+        public Address(ASCIIText256 value)
         {
             this.value = value;
         }
@@ -223,7 +223,7 @@ namespace Data
             return new(value);
         }
 
-        public static implicit operator FixedString(Address address)
+        public static implicit operator ASCIIText256(Address address)
         {
             return address.value;
         }
