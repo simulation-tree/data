@@ -34,4 +34,4 @@ source.Write("Hello, World!");
 ```
 
 Systems that implement fetching are encouraged to implement loading from other sources too,
-as to not limit it to just entities. The [data-systems](https://github.com/game-simulations/data-systems) implementation project is an example of this.
+as to not limit it to just entities. The [data-systems](https://github.com/simulation-tree/data-systems) implementation project is an example of this.

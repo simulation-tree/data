@@ -11,9 +11,9 @@
         <GenerateDocumentationFile>True</GenerateDocumentationFile>
         <Title>Data</Title>
         <Authors>popcron</Authors>
-        <Company>game-simulations</Company>
+        <Company>simulation-tree</Company>
         <Description>Describes arbitrary data</Description>
-        <RepositoryUrl>https://github.com/game-simulations/data</RepositoryUrl>
+        <RepositoryUrl>https://github.com/simulation-tree/data</RepositoryUrl>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <IsAotCompatible>True</IsAotCompatible>
         <IsTrimmable>True</IsTrimmable>
