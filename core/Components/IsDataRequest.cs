@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Unmanaged;
 
 namespace Data.Components
 {
@@ -10,7 +9,7 @@ namespace Data.Components
         public RequestStatus status;
         public TimeSpan timeout;
 
-        public IsDataRequest(USpan<char> address, RequestStatus status, TimeSpan timeout)
+        public IsDataRequest(System.Span<char> address, RequestStatus status, TimeSpan timeout)
         {
             this.address = new(address);
             this.status = status;

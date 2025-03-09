@@ -1,4 +1,5 @@
-﻿using Unmanaged;
+﻿using System;
+using Unmanaged;
 using Worlds;
 
 namespace Data.Tests
@@ -14,8 +15,8 @@ namespace Data.Tests
             Assert.That(data.Address.ToString(), Is.EqualTo("hello"));
 
             using ByteReader reader = data.CreateBinaryReader();
-            USpan<char> buffer = stackalloc char[128];
-            uint length = reader.ReadUTF8(buffer);
+            Span<char> buffer = stackalloc char[128];
+            int length = reader.ReadUTF8(buffer);
 
             Assert.That(buffer.Slice(0, length).ToString(), Is.EqualTo("data"));
         }

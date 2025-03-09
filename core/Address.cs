@@ -22,7 +22,7 @@ namespace Data
             this.value = new(value);
         }
 
-        public Address(USpan<char> value)
+        public Address(System.Span<char> value)
         {
             this.value = new(value);
         }
@@ -37,9 +37,9 @@ namespace Data
             return value.ToString();
         }
 
-        public readonly uint ToString(USpan<char> buffer)
+        public readonly int ToString(Span<char> destination)
         {
-            return value.CopyTo(buffer);
+            return value.CopyTo(destination);
         }
 
         public readonly override bool Equals(object? obj)
@@ -57,11 +57,11 @@ namespace Data
             return Equals(other.AsSpan());
         }
 
-        public readonly bool Equals(USpan<char> other)
+        public readonly bool Equals(ReadOnlySpan<char> other)
         {
-            USpan<char> self = stackalloc char[value.Length];
+            Span<char> self = stackalloc char[value.Length];
             value.CopyTo(self);
-            for (uint i = 0; i < self.Length; i++)
+            for (int i = 0; i < self.Length; i++)
             {
                 char s = self[i];
                 char o = other[i];
@@ -93,15 +93,15 @@ namespace Data
             return true;
         }
 
-        public readonly bool EndsWith(USpan<char> other)
+        public readonly bool EndsWith(ReadOnlySpan<char> other)
         {
-            USpan<char> self = stackalloc char[value.Length];
+            Span<char> self = stackalloc char[value.Length];
             value.CopyTo(self);
-            for (uint i = other.Length - 1; i != uint.MaxValue; i--)
+            for (int i = other.Length - 1; i >= 0; i--)
             {
                 char s = self[self.Length - 1];
                 char o = other[i];
-                self = self.GetSpan(self.Length - 1);
+                self = self.Slice(0, self.Length - 1);
 
                 if (s != o)
                 {
@@ -131,42 +131,42 @@ namespace Data
             return true;
         }
 
-        public readonly uint IndexOf(char character)
+        public readonly int IndexOf(char character)
         {
             return value.IndexOf(character);
         }
 
-        public readonly uint LastIndexOf(char character)
+        public readonly int LastIndexOf(char character)
         {
             return value.LastIndexOf(character);
         }
 
-        public readonly bool TryIndexOf(char character, out uint index)
+        public readonly bool TryIndexOf(char character, out int index)
         {
             return value.TryIndexOf(character, out index);
         }
 
-        public readonly bool TryLastIndexOf(char character, out uint index)
+        public readonly bool TryLastIndexOf(char character, out int index)
         {
             return value.TryLastIndexOf(character, out index);
         }
 
-        public readonly Address Slice(uint start, uint length)
+        public readonly Address Slice(int start, int length)
         {
             return new(value.Slice(start, length));
         }
 
-        public readonly Address Slice(uint start)
+        public readonly Address Slice(int start)
         {
             return new(value.Slice(start));
         }
 
         public readonly bool Matches(string other)
         {
-            USpan<char> buffer = stackalloc char[other.Length];
-            for (uint i = 0; i < other.Length; i++)
+            Span<char> buffer = stackalloc char[other.Length];
+            for (int i = 0; i < other.Length; i++)
             {
-                buffer[i] = other[(int)i];
+                buffer[i] = other[i];
             }
 
             return Matches(buffer);
@@ -174,14 +174,14 @@ namespace Data
 
         public readonly bool Matches(Address other)
         {
-            USpan<char> buffer = stackalloc char[other.value.Length];
+            Span<char> buffer = stackalloc char[other.value.Length];
             other.value.CopyTo(buffer);
             return Matches(buffer);
         }
 
-        public readonly bool Matches(USpan<char> other)
+        public readonly bool Matches(ReadOnlySpan<char> other)
         {
-            USpan<char> self = stackalloc char[value.Length];
+            Span<char> self = stackalloc char[value.Length];
             value.CopyTo(self);
             if (other[0] == '*')
             {

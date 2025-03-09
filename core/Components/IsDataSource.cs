@@ -1,4 +1,5 @@
-﻿using Unmanaged;
+﻿using System;
+using Unmanaged;
 
 namespace Data.Components
 {
@@ -16,7 +17,7 @@ namespace Data.Components
             this.address = address;
         }
 
-        public IsDataSource(USpan<char> address)
+        public IsDataSource(Span<char> address)
         {
             this.address = new(address);
         }

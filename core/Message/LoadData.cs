@@ -26,7 +26,7 @@ namespace Data.Messages
         /// <summary>
         /// Loaded bytes.
         /// </summary>
-        public readonly USpan<byte> Bytes
+        public readonly System.Span<byte> Bytes
         {
             get
             {
