@@ -15,8 +15,8 @@ while (!request.Is())
     world.Poll();
 }
 
-USpan<byte> data = request.GetBytes();
-Assert.That(new FixedString(data).ToString(), Is.EqualTo("Hello, World!"));
+ReadOnlySpan<byte> utf8Bytes = request.GetBytes();
+Assert.That(new ASCIIText256(utf8Bytes).ToString(), Is.EqualTo("Hello, World!"));
 ```
 
 ### Address mechanisms
