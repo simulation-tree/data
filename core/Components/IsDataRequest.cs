@@ -9,7 +9,7 @@ namespace Data.Components
         public RequestStatus status;
         public TimeSpan timeout;
 
-        public IsDataRequest(System.Span<char> address, RequestStatus status, TimeSpan timeout)
+        public IsDataRequest(ReadOnlySpan<char> address, RequestStatus status, TimeSpan timeout)
         {
             this.address = new(address);
             this.status = status;

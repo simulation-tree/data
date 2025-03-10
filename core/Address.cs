@@ -10,7 +10,7 @@ namespace Data
     {
         private ASCIIText256 value;
 
-        public readonly byte Length => value.Length;
+        public readonly int Length => value.Length;
 
         public Address(ASCIIText256 value)
         {
@@ -22,7 +22,7 @@ namespace Data
             this.value = new(value);
         }
 
-        public Address(System.Span<char> value)
+        public Address(ReadOnlySpan<char> value)
         {
             this.value = new(value);
         }

@@ -15,7 +15,10 @@ namespace Data
         public readonly Address Address => GetComponent<IsDataRequest>().address;
         public readonly bool IsLoaded => GetComponent<IsDataRequest>().status == RequestStatus.Loaded;
 
-        public readonly System.Span<byte> Bytes
+        /// <summary>
+        /// Bytes of the loaded data.
+        /// </summary>
+        public readonly ReadOnlySpan<byte> Bytes
         {
             get
             {
@@ -31,7 +34,7 @@ namespace Data
             archetype.AddArrayType<BinaryData>();
         }
 
-        public DataRequest(World world, System.Span<char> address, TimeSpan timeout = default)
+        public DataRequest(World world, ReadOnlySpan<char> address, TimeSpan timeout = default)
         {
             this.world = world;
             value = world.CreateEntity(new IsDataRequest(address, RequestStatus.Submitted, timeout));
@@ -60,7 +63,10 @@ namespace Data
             return Address.ToString();
         }
 
-        public readonly bool TryGetData(out System.Span<byte> data)
+        /// <summary>
+        /// Tries to retrieve the data if its loaded.
+        /// </summary>
+        public readonly bool TryGetData(out ReadOnlySpan<byte> data)
         {
             if (IsLoaded)
             {

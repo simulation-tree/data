@@ -26,7 +26,7 @@ namespace Data.Messages
         /// <summary>
         /// Loaded bytes.
         /// </summary>
-        public readonly System.Span<byte> Bytes
+        public readonly ReadOnlySpan<byte> Bytes
         {
             get
             {
@@ -81,6 +81,21 @@ namespace Data.Messages
             ThrowIfAlreadyLoaded();
 
             return new LoadData(world, address, loadedData);
+        }
+
+        /// <summary>
+        /// Tries to retrieve the loaded bytes.
+        /// </summary>
+        public readonly bool TryGetBytes(out ReadOnlySpan<byte> data)
+        {
+            if (!loadedData.IsDisposed)
+            {
+                data = loadedData.GetBytes();
+                return true;
+            }
+
+            data = default;
+            return false;
         }
 
         [Conditional("DEBUG")]
