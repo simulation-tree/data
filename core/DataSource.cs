@@ -75,7 +75,7 @@ namespace Data
         /// <summary>
         /// Appends the given text as UTF8 formatted bytes.
         /// </summary>
-        public readonly void WriteUTF8(Span<char> text)
+        public readonly void WriteUTF8(ReadOnlySpan<char> text)
         {
             using ByteWriter writer = new(text.Length * 3);
             writer.WriteUTF8(text);
@@ -105,12 +105,10 @@ namespace Data
         /// <summary>
         /// Appends the given bytes.
         /// </summary>
-        public readonly void Write(Span<byte> bytes)
+        public readonly void Write(ReadOnlySpan<byte> bytes)
         {
             Values<BinaryData> array = GetArray<BinaryData>();
-            int length = array.Length;
-            array.Length += bytes.Length;
-            bytes.CopyTo(array.AsSpan<byte>(length));
+            array.AddRange(bytes.As<byte, BinaryData>());
         }
 
         public readonly ByteReader CreateBinaryReader()
