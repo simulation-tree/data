@@ -1,8 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
-using Unmanaged;
 
-namespace Data.Generator
+namespace Data.Generators
 {
     [Generator(LanguageNames.CSharp)]
     public class EmbeddedResourceRegistryLoaderGenerator : IIncrementalGenerator

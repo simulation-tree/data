@@ -1,6 +1,6 @@
-﻿namespace Data.Generator
+﻿namespace Data
 {
-    public static class Constants
+    internal static class Constants
     {
         public const string ProjectNameSpace = "Data";
         public const string DataBankTypeName = "{0}DataBank";

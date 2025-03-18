@@ -4,9 +4,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Threading;
-using Unmanaged;
 
-namespace Data.Generator
+namespace Data.Generators
 {
     [Generator(LanguageNames.CSharp)]
     public class EmbeddedResourceBankGenerator : IIncrementalGenerator
