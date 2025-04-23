@@ -8,7 +8,7 @@ namespace Data.Tests
     {
         static DataTests()
         {
-            MetadataRegistry.Load<DataTypeBank>();
+            MetadataRegistry.Load<DataMetadataBank>();
         }
 
         protected override Schema CreateSchema()
