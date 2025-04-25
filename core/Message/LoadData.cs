@@ -8,12 +8,12 @@ namespace Data.Messages
     /// <summary>
     /// A message for loading binary data, that must be disposed after completing.
     /// </summary>
-    public readonly struct LoadData : IDisposable
+    public struct LoadData
     {
         public readonly World world;
         public readonly Address address;
 
-        private readonly ByteReader loadedData;
+        private ByteReader loadedData;
 
         /// <summary>
         /// Checks if this message was completed.
@@ -62,40 +62,27 @@ namespace Data.Messages
             this.loadedData = default;
         }
 
-        private LoadData(World world, Address address, ByteReader loadedData)
-        {
-            this.world = world;
-            this.address = address;
-            this.loadedData = loadedData;
-        }
-
-        public readonly void Dispose()
+        /// <summary>
+        /// Tries to consume the data loaded in this message.
+        /// <para>
+        /// Disposing of the retrieved <paramref name="loadedData"/> is required.
+        /// </para>
+        /// </summary>
+        public bool TryConsume(out ByteReader loadedData)
         {
             ThrowIfNotLoaded();
 
-            loadedData.Dispose();
+            bool isLoaded = !this.loadedData.IsDisposed;
+            loadedData = this.loadedData;
+            this.loadedData = default;
+            return isLoaded;
         }
 
-        public readonly LoadData BecomeLoaded(ByteReader loadedData)
+        public void BecomeLoaded(ByteReader loadedData)
         {
             ThrowIfAlreadyLoaded();
 
-            return new LoadData(world, address, loadedData);
-        }
-
-        /// <summary>
-        /// Tries to retrieve the loaded bytes.
-        /// </summary>
-        public readonly bool TryGetBytes(out ReadOnlySpan<byte> data)
-        {
-            if (!loadedData.IsDisposed)
-            {
-                data = loadedData.GetBytes();
-                return true;
-            }
-
-            data = default;
-            return false;
+            this.loadedData = loadedData;
         }
 
         [Conditional("DEBUG")]
