@@ -10,7 +10,14 @@ namespace Data.Messages
     /// </summary>
     public struct LoadData
     {
+        /// <summary>
+        /// The world being used to find the data source.
+        /// </summary>
         public readonly World world;
+
+        /// <summary>
+        /// The address of the data being requested.
+        /// </summary>
         public readonly Address address;
 
         private ByteReader loadedData;
@@ -38,9 +45,6 @@ namespace Data.Messages
 
         /// <summary>
         /// Creates a message that requests for data from the given <paramref name="address"/>.
-        /// <para>
-        /// Once loaded, it must be disposed.
-        /// </para>
         /// </summary>
         public LoadData(World world, Address address)
         {
@@ -51,9 +55,6 @@ namespace Data.Messages
 
         /// <summary>
         /// Creates a message that requests for data from the given <paramref name="address"/>.
-        /// <para>
-        /// Once loaded, it must be disposed.
-        /// </para>
         /// </summary>
         public LoadData(World world, ASCIIText256 address)
         {
@@ -78,6 +79,9 @@ namespace Data.Messages
             return isLoaded;
         }
 
+        /// <summary>
+        /// Modifies this message to contain the given <paramref name="loadedData"/>.
+        /// </summary>
         public void BecomeLoaded(ByteReader loadedData)
         {
             ThrowIfAlreadyLoaded();

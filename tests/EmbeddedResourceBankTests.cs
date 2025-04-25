@@ -17,7 +17,7 @@ namespace Data.Tests
             EmbeddedResource embeddedResource = EmbeddedResourceRegistry.Get("Assets/data1.txt");
             Assert.That(embeddedResource.Assembly, Is.EqualTo(typeof(CustomResourceBank).Assembly));
             Assert.That(embeddedResource.address.ToString(), Is.EqualTo("Assets/data1.txt"));
-            using ByteReader data = embeddedResource.CreateBinaryReader();
+            using ByteReader data = embeddedResource.CreateByteReader();
             Span<char> buffer = stackalloc char[128];
             int length = data.ReadUTF8(buffer);
             Assert.That(buffer.Slice(0, length).ToString(), Is.EqualTo("this is some data, yo"));

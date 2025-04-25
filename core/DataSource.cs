@@ -11,7 +11,14 @@ namespace Data
     /// </summary>
     public readonly partial struct DataSource : IEntity
     {
+        /// <summary>
+        /// Address defining the data source.
+        /// </summary>
         public readonly Address Address => GetComponent<IsDataSource>().address;
+
+        /// <summary>
+        /// Assigned bytes.
+        /// </summary>
         public readonly Span<byte> Bytes => GetArray<BinaryData>().AsSpan<byte>();
 
         readonly void IEntity.Describe(ref Archetype archetype)
@@ -62,14 +69,10 @@ namespace Data
             WriteUTF8(text);
         }
 
+        /// <inheritdoc/>
         public readonly override string ToString()
         {
             return Address.ToString();
-        }
-
-        public readonly int ToString(Span<char> buffer)
-        {
-            return Address.ToString(buffer);
         }
 
         /// <summary>
@@ -111,7 +114,19 @@ namespace Data
             array.AddRange(bytes.As<byte, BinaryData>());
         }
 
-        public readonly ByteReader CreateBinaryReader()
+        /// <summary>
+        /// Clears the data source.
+        /// </summary>
+        public readonly void Clear()
+        {
+            Values<BinaryData> array = GetArray<BinaryData>();
+            array.Clear();
+        }
+
+        /// <summary>
+        /// Creates a new byte reader from the contained bytes.
+        /// </summary>
+        public readonly ByteReader CreateByteReader()
         {
             return new(Bytes);
         }

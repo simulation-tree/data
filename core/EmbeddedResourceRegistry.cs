@@ -12,8 +12,15 @@ namespace Data
         private static readonly List<EmbeddedResource> all = new();
         private static readonly List<Address> addresses = new();
 
+        /// <summary>
+        /// List of all registered embedded resources.
+        /// </summary>
         public static IReadOnlyList<EmbeddedResource> All => all;
 
+        /// <summary>
+        /// Loads a bank of embedded resources.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
         public static void Load<T>() where T : unmanaged, IEmbeddedResourceBank
         {
             T template = default;
@@ -26,12 +33,18 @@ namespace Data
             }
         }
 
+        /// <summary>
+        /// Registers a single embedded resource.
+        /// </summary>
         public static void Register(Assembly assembly, Address address)
         {
             all.Add(new EmbeddedResource(assembly, address));
             addresses.Add(address);
         }
 
+        /// <summary>
+        /// Tries to find the index of the given <paramref name="address"/> in the registry.
+        /// </summary>
         private static bool TryGetMatch(Address address, out int index)
         {
             for (int i = 0; i < addresses.Count; i++)
@@ -47,11 +60,17 @@ namespace Data
             return false;
         }
 
+        /// <summary>
+        /// Checks if the registry contains the given <paramref name="address"/>.
+        /// </summary>
         public static bool Contains(Address address)
         {
             return TryGetMatch(address, out _);
         }
 
+        /// <summary>
+        /// Tries to retrieve the embedded resource at the given <paramref name="address"/>.
+        /// </summary>
         public static bool TryGet(Address address, out EmbeddedResource resource)
         {
             if (TryGetMatch(address, out int index))
@@ -64,6 +83,9 @@ namespace Data
             return false;
         }
 
+        /// <summary>
+        /// Retrieves the embedded resource at the given <paramref name="address"/>.
+        /// </summary>
         public static EmbeddedResource Get(Address address)
         {
             ThrowIfMissing(address);
@@ -72,6 +94,9 @@ namespace Data
             return all[index];
         }
 
+        /// <summary>
+        /// Retrieves the embedded resource found in the given <typeparamref name="T"/> type.
+        /// </summary>
         public static EmbeddedResource Get<T>() where T : unmanaged, IEmbeddedResource
         {
             T template = default;

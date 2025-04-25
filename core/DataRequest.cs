@@ -12,7 +12,14 @@ namespace Data
     /// </summary>
     public readonly partial struct DataRequest : IEntity
     {
+        /// <summary>
+        /// Address of the data request.
+        /// </summary>
         public readonly Address Address => GetComponent<IsDataRequest>().address;
+
+        /// <summary>
+        /// Checks if this request is loaded.
+        /// </summary>
         public readonly bool IsLoaded => GetComponent<IsDataRequest>().status == RequestStatus.Loaded;
 
         /// <summary>
@@ -34,30 +41,43 @@ namespace Data
             archetype.AddArrayType<BinaryData>();
         }
 
+        /// <summary>
+        /// Creates a new data request entity.
+        /// </summary>
         public DataRequest(World world, ReadOnlySpan<char> address, TimeSpan timeout = default)
         {
             this.world = world;
-            value = world.CreateEntity(new IsDataRequest(address, RequestStatus.Submitted, timeout));
+            value = world.CreateEntity(new IsDataRequest(address, RequestStatus.Awaiting, timeout));
         }
 
+        /// <summary>
+        /// Creates a new data request entity.
+        /// </summary>
         public DataRequest(World world, Address address, TimeSpan timeout = default)
         {
             this.world = world;
-            value = world.CreateEntity(new IsDataRequest(address, RequestStatus.Submitted, timeout));
+            value = world.CreateEntity(new IsDataRequest(address, RequestStatus.Awaiting, timeout));
         }
 
+        /// <summary>
+        /// Creates a new data request entity.
+        /// </summary>
         public DataRequest(World world, string address, TimeSpan timeout = default)
         {
             this.world = world;
-            value = world.CreateEntity(new IsDataRequest(address, RequestStatus.Submitted, timeout));
+            value = world.CreateEntity(new IsDataRequest(address, RequestStatus.Awaiting, timeout));
         }
 
+        /// <summary>
+        /// Creates a new data request entity.
+        /// </summary>
         public DataRequest(World world, IEnumerable<char> address, TimeSpan timeout = default)
         {
             this.world = world;
-            value = world.CreateEntity(new IsDataRequest(address, RequestStatus.Submitted, timeout));
+            value = world.CreateEntity(new IsDataRequest(address, RequestStatus.Awaiting, timeout));
         }
 
+        /// <inheritdoc/>
         public readonly override string ToString()
         {
             return Address.ToString();
@@ -80,7 +100,11 @@ namespace Data
             }
         }
 
-        public readonly ByteReader CreateBinaryReader()
+        /// <summary>
+        /// Creates a new byte reader from the loaded bytes.
+        /// </summary>
+        /// <returns></returns>
+        public readonly ByteReader CreateByteReader()
         {
             ThrowIfNotLoaded();
 

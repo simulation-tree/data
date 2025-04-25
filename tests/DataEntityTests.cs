@@ -14,7 +14,7 @@ namespace Data.Tests
 
             Assert.That(data.Address.ToString(), Is.EqualTo("hello"));
 
-            using ByteReader reader = data.CreateBinaryReader();
+            using ByteReader reader = data.CreateByteReader();
             Span<char> buffer = stackalloc char[128];
             int length = reader.ReadUTF8(buffer);
 
