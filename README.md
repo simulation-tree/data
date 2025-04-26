@@ -1,18 +1,19 @@
 # Data
 
-Abstraction of data fetching and references.
+Abstraction of data fetching.
 
 ### Requesting data with addresses
 
-Entities with the `IsDataRequest` component imply that the entity will have a list of bytes
-fetched from whatever source is available:
+Entities with the `IsDataRequest` component imply that the entity wants to fetch bytes
+from the address requested, within the timeout specified:
 ```csharp
 using World world = new();
 DataRequest request = new(world, "Assets/text.txt");
-while (!request.Is())
+await request.UntilCompliant(Simulate);
+
+void Simulate(World world, CancellationToken token)
 {
-    world.Submit(new DataUpdate());
-    world.Poll();
+    world.Simulate(token);
 }
 
 ReadOnlySpan<byte> utf8Bytes = request.GetBytes();
