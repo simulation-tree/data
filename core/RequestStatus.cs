@@ -11,9 +11,9 @@
         Unknown = 0,
 
         /// <summary>
-        /// Request is waiting to be handled.
+        /// Request is submitted and waiting to be handled.
         /// </summary>
-        Awaiting = 1,
+        Submitted = 1,
 
         /// <summary>
         /// Request is active and is being processed.

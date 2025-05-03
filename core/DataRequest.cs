@@ -47,7 +47,7 @@ namespace Data
         public DataRequest(World world, ReadOnlySpan<char> address, TimeSpan timeout = default)
         {
             this.world = world;
-            value = world.CreateEntity(new IsDataRequest(address, RequestStatus.Awaiting, timeout));
+            value = world.CreateEntity(new IsDataRequest(address, RequestStatus.Submitted, timeout));
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace Data
         public DataRequest(World world, Address address, TimeSpan timeout = default)
         {
             this.world = world;
-            value = world.CreateEntity(new IsDataRequest(address, RequestStatus.Awaiting, timeout));
+            value = world.CreateEntity(new IsDataRequest(address, RequestStatus.Submitted, timeout));
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace Data
         public DataRequest(World world, string address, TimeSpan timeout = default)
         {
             this.world = world;
-            value = world.CreateEntity(new IsDataRequest(address, RequestStatus.Awaiting, timeout));
+            value = world.CreateEntity(new IsDataRequest(address, RequestStatus.Submitted, timeout));
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace Data
         public DataRequest(World world, IEnumerable<char> address, TimeSpan timeout = default)
         {
             this.world = world;
-            value = world.CreateEntity(new IsDataRequest(address, RequestStatus.Awaiting, timeout));
+            value = world.CreateEntity(new IsDataRequest(address, RequestStatus.Submitted, timeout));
         }
 
         /// <inheritdoc/>
@@ -103,7 +103,6 @@ namespace Data
         /// <summary>
         /// Creates a new byte reader from the loaded bytes.
         /// </summary>
-        /// <returns></returns>
         public readonly ByteReader CreateByteReader()
         {
             ThrowIfNotLoaded();

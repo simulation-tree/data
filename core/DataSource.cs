@@ -14,7 +14,7 @@ namespace Data
         /// <summary>
         /// Address defining the data source.
         /// </summary>
-        public readonly Address Address => GetComponent<IsDataSource>().address;
+        public readonly ref Address Address => ref GetComponent<IsDataSource>().address;
 
         /// <summary>
         /// Assigned bytes.
