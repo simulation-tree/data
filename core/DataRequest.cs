@@ -31,14 +31,14 @@ namespace Data
             {
                 ThrowIfNotLoaded();
 
-                return GetArray<BinaryData>().AsSpan<byte>();
+                return GetArray<DataByte>().AsSpan<byte>();
             }
         }
 
         readonly void IEntity.Describe(ref Archetype archetype)
         {
             archetype.AddComponentType<IsDataRequest>();
-            archetype.AddArrayType<BinaryData>();
+            archetype.AddArrayType<DataByte>();
         }
 
         /// <summary>

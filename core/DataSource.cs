@@ -19,12 +19,12 @@ namespace Data
         /// <summary>
         /// Assigned bytes.
         /// </summary>
-        public readonly Span<byte> Bytes => GetArray<BinaryData>().AsSpan<byte>();
+        public readonly Span<byte> Bytes => GetArray<DataByte>().AsSpan<byte>();
 
         readonly void IEntity.Describe(ref Archetype archetype)
         {
             archetype.AddComponentType<IsDataSource>();
-            archetype.AddArrayType<BinaryData>();
+            archetype.AddArrayType<DataByte>();
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Data
         {
             this.world = world;
             value = world.CreateEntity(new IsDataSource(address));
-            world.CreateArray<BinaryData>(value);
+            world.CreateArray<DataByte>(value);
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Data
         {
             this.world = world;
             value = world.CreateEntity(new IsDataSource(address));
-            world.CreateArray(value, bytes.As<byte, BinaryData>());
+            world.CreateArray(value, bytes.As<byte, DataByte>());
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace Data
         {
             this.world = world;
             value = world.CreateEntity(new IsDataSource(address));
-            world.CreateArray<BinaryData>(value);
+            world.CreateArray<DataByte>(value);
             WriteUTF8(text);
         }
 
@@ -65,7 +65,7 @@ namespace Data
         {
             this.world = world;
             value = world.CreateEntity(new IsDataSource(address));
-            world.CreateArray<BinaryData>(value);
+            world.CreateArray<DataByte>(value);
             WriteUTF8(text);
         }
 
@@ -110,8 +110,8 @@ namespace Data
         /// </summary>
         public readonly void Write(ReadOnlySpan<byte> bytes)
         {
-            Values<BinaryData> array = GetArray<BinaryData>();
-            array.AddRange(bytes.As<byte, BinaryData>());
+            Values<DataByte> array = GetArray<DataByte>();
+            array.AddRange(bytes.As<byte, DataByte>());
         }
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace Data
         /// </summary>
         public readonly void Clear()
         {
-            Values<BinaryData> array = GetArray<BinaryData>();
+            Values<DataByte> array = GetArray<DataByte>();
             array.Clear();
         }
 
