@@ -20,15 +20,12 @@ namespace Data.Messages
         /// </summary>
         public readonly Address address;
 
-        private ByteReader loadedData;
-
         /// <summary>
-        /// Checks if this message was completed.
-        /// <para>
-        /// If so, it must be disposed after reading its data.
-        /// </para>
+        /// Status of the request.
         /// </summary>
-        public readonly bool IsLoaded => !loadedData.IsDisposed;
+        public RequestStatus status;
+
+        private ByteReader data;
 
         /// <summary>
         /// Loaded bytes.
@@ -39,7 +36,7 @@ namespace Data.Messages
             {
                 ThrowIfNotLoaded();
 
-                return loadedData.GetBytes();
+                return data.GetBytes();
             }
         }
 
@@ -50,7 +47,8 @@ namespace Data.Messages
         {
             this.world = world;
             this.address = address;
-            this.loadedData = default;
+            data = default;
+            status = RequestStatus.Uninitialized;
         }
 
         /// <summary>
@@ -60,7 +58,8 @@ namespace Data.Messages
         {
             this.world = world;
             this.address = new(address);
-            this.loadedData = default;
+            data = default;
+            status = RequestStatus.Uninitialized;
         }
 
         /// <summary>
@@ -71,37 +70,52 @@ namespace Data.Messages
         /// </summary>
         public bool TryConsume(out ByteReader loadedData)
         {
-            ThrowIfNotLoaded();
-
-            bool isLoaded = !this.loadedData.IsDisposed;
-            loadedData = this.loadedData;
-            this.loadedData = default;
-            return isLoaded;
+            if (status == RequestStatus.Loaded)
+            {
+                status = RequestStatus.Consumed;
+                loadedData = data;
+                data = default;
+                return true;
+            }
+            else
+            {
+                loadedData = default;
+                return false;
+            }
         }
 
         /// <summary>
-        /// Modifies this message to contain the given <paramref name="loadedData"/>.
+        /// Marks this message as loaded.
         /// </summary>
-        public void BecomeLoaded(ByteReader loadedData)
+        public void Load(ByteReader byteReader)
         {
-            ThrowIfAlreadyLoaded();
+            ThrowIfLoaded();
 
-            this.loadedData = loadedData;
+            data = byteReader;
+            status = RequestStatus.Loaded;
+        }
+
+        /// <summary>
+        /// Marks this message as completed, but not found.
+        /// </summary>
+        public void NotFound()
+        {
+            status = RequestStatus.NotFound;
         }
 
         [Conditional("DEBUG")]
         private readonly void ThrowIfNotLoaded()
         {
-            if (!IsLoaded)
+            if (status != RequestStatus.Loaded)
             {
                 throw new InvalidOperationException($"Data for `{address}` is not available");
             }
         }
 
         [Conditional("DEBUG")]
-        private readonly void ThrowIfAlreadyLoaded()
+        private readonly void ThrowIfLoaded()
         {
-            if (IsLoaded)
+            if (status == RequestStatus.Loaded)
             {
                 throw new InvalidOperationException($"Data for `{address}` is already loaded");
             }

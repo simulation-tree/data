@@ -8,26 +8,31 @@
         /// <summary>
         /// Uninitialized.
         /// </summary>
-        Unknown = 0,
+        Uninitialized,
 
         /// <summary>
         /// Request is submitted and waiting to be handled.
         /// </summary>
-        Submitted = 1,
+        Submitted,
 
         /// <summary>
         /// Request is active and is being processed.
         /// </summary>
-        Loading = 2,
+        Loading,
 
         /// <summary>
         /// Request is complete and data has been found.
         /// </summary>
-        Loaded = 3,
+        Loaded,
 
         /// <summary>
         /// Request is complete but data was not found.
         /// </summary>
-        NotFound = 4
+        NotFound,
+
+        /// <summary>
+        /// Data has been loaded and consumed by another action.
+        /// </summary>
+        Consumed
     }
 }

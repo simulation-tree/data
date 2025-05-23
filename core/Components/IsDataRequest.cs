@@ -21,12 +21,12 @@ namespace Data.Components
         /// <summary>
         /// Amount of time to wait until the request is considered failed.
         /// </summary>
-        public TimeSpan timeout;
+        public double timeout;
 
         /// <summary>
         /// Creates the component.
         /// </summary>
-        public IsDataRequest(ReadOnlySpan<char> address, RequestStatus status, TimeSpan timeout)
+        public IsDataRequest(ReadOnlySpan<char> address, RequestStatus status, double timeout)
         {
             this.address = new(address);
             this.status = status;
@@ -36,7 +36,7 @@ namespace Data.Components
         /// <summary>
         /// Creates the component.
         /// </summary>
-        public IsDataRequest(Address address, RequestStatus status, TimeSpan timeout)
+        public IsDataRequest(Address address, RequestStatus status, double timeout)
         {
             this.address = address;
             this.status = status;
@@ -46,7 +46,7 @@ namespace Data.Components
         /// <summary>
         /// Creates the component.
         /// </summary>
-        public IsDataRequest(string address, RequestStatus status, TimeSpan timeout)
+        public IsDataRequest(string address, RequestStatus status, double timeout)
         {
             this.address = new(address);
             this.status = status;
@@ -56,7 +56,7 @@ namespace Data.Components
         /// <summary>
         /// Creates the component.
         /// </summary>
-        public IsDataRequest(IEnumerable<char> address, RequestStatus status, TimeSpan timeout)
+        public IsDataRequest(IEnumerable<char> address, RequestStatus status, double timeout)
         {
             this.address = new(address);
             this.status = status;
