@@ -20,12 +20,18 @@ namespace Data.Messages
         /// </summary>
         public readonly Address address;
 
-        /// <summary>
-        /// Status of the request.
-        /// </summary>
-        public RequestStatus status;
-
+        private Status status;
         private ByteReader data;
+
+        /// <summary>
+        /// Checks if the data has been found.
+        /// </summary>
+        public readonly bool IsFound => status == Status.Found;
+
+        /// <summary>
+        /// Checks if the data has been found and consumed by a handler.
+        /// </summary>
+        public readonly bool IsConsumed => status == Status.FoundAndConsumed;
 
         /// <summary>
         /// Loaded bytes.
@@ -34,7 +40,7 @@ namespace Data.Messages
         {
             get
             {
-                ThrowIfNotLoaded();
+                ThrowIfNotFound();
 
                 return data.GetBytes();
             }
@@ -48,7 +54,7 @@ namespace Data.Messages
             this.world = world;
             this.address = address;
             data = default;
-            status = RequestStatus.Uninitialized;
+            status = Status.NotFound;
         }
 
         /// <summary>
@@ -59,7 +65,7 @@ namespace Data.Messages
             this.world = world;
             this.address = new(address);
             data = default;
-            status = RequestStatus.Uninitialized;
+            status = Status.NotFound;
         }
 
         /// <summary>
@@ -70,9 +76,9 @@ namespace Data.Messages
         /// </summary>
         public bool TryConsume(out ByteReader loadedData)
         {
-            if (status == RequestStatus.Loaded)
+            if (status == Status.Found)
             {
-                status = RequestStatus.Consumed;
+                status = Status.FoundAndConsumed;
                 loadedData = data;
                 data = default;
                 return true;
@@ -87,12 +93,12 @@ namespace Data.Messages
         /// <summary>
         /// Marks this message as loaded.
         /// </summary>
-        public void Load(ByteReader byteReader)
+        public void Found(ByteReader byteReader)
         {
-            ThrowIfLoaded();
+            ThrowIfFound();
 
             data = byteReader;
-            status = RequestStatus.Loaded;
+            status = Status.Found;
         }
 
         /// <summary>
@@ -100,25 +106,51 @@ namespace Data.Messages
         /// </summary>
         public void NotFound()
         {
-            status = RequestStatus.NotFound;
+            status = Status.NotFound;
         }
 
         [Conditional("DEBUG")]
-        private readonly void ThrowIfNotLoaded()
+        private readonly void ThrowIfNotFound()
         {
-            if (status != RequestStatus.Loaded)
+            if (status != Status.Found)
             {
                 throw new InvalidOperationException($"Data for `{address}` is not available");
             }
         }
 
         [Conditional("DEBUG")]
-        private readonly void ThrowIfLoaded()
+        private readonly void ThrowIfFound()
         {
-            if (status == RequestStatus.Loaded)
+            if (status == Status.Found)
             {
                 throw new InvalidOperationException($"Data for `{address}` is already loaded");
             }
+        }
+
+        /// <summary>
+        /// Possible states of the message.
+        /// </summary>
+        public enum Status : byte
+        {
+            /// <summary>
+            /// The message hasn't been handled.
+            /// </summary>
+            NotHandled,
+
+            /// <summary>
+            /// Data has been found.
+            /// </summary>
+            Found,
+
+            /// <summary>
+            /// Data has not been found.
+            /// </summary>
+            NotFound,
+
+            /// <summary>
+            /// Data has been found and was consumed by a handler.
+            /// </summary>
+            FoundAndConsumed
         }
     }
 }
