@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using Unmanaged;
-using Worlds;
 
 namespace Data.Messages
 {
@@ -10,11 +9,6 @@ namespace Data.Messages
     /// </summary>
     public struct LoadData
     {
-        /// <summary>
-        /// The world being used to find the data source.
-        /// </summary>
-        public readonly World world;
-
         /// <summary>
         /// The address of the data being requested.
         /// </summary>
@@ -49,9 +43,8 @@ namespace Data.Messages
         /// <summary>
         /// Creates a message that requests for data from the given <paramref name="address"/>.
         /// </summary>
-        public LoadData(World world, Address address)
+        public LoadData(Address address)
         {
-            this.world = world;
             this.address = address;
             data = default;
             status = Status.NotFound;
@@ -60,9 +53,8 @@ namespace Data.Messages
         /// <summary>
         /// Creates a message that requests for data from the given <paramref name="address"/>.
         /// </summary>
-        public LoadData(World world, ASCIIText256 address)
+        public LoadData(ASCIIText256 address)
         {
-            this.world = world;
             this.address = new(address);
             data = default;
             status = Status.NotFound;
