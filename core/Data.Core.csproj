@@ -46,9 +46,9 @@
 
   <ItemGroup>
     <Content Include="bin/Debug/net9.0/Data.Core.dll" Pack="true" PackagePath="tools/debug/Data.Core.dll" Visible="false"/>
-    <Content Include="bin/Debug/net9.0/Data.Core.xml" Pack="true" PackagePath="tools/debug/Data.Core.xml" Visible="false"/>
+    <Content Include="bin/Debug/net9.0/Data.Core.xml" Pack="true" PackagePath="tools/debug/Data.Core.xml" Visible="false" Condition="Exists('bin/Debug/net9.0/Data.Core.xml')"/>
     <Content Include="bin/Release/net9.0/Data.Core.dll" Pack="true" PackagePath="tools/release/Data.Core.dll" Visible="false"/>
-    <Content Include="bin/Release/net9.0/Data.Core.xml" Pack="true" PackagePath="tools/release/Data.Core.xml" Visible="false"/>
+    <Content Include="bin/Release/net9.0/Data.Core.xml" Pack="true" PackagePath="tools/release/Data.Core.xml" Visible="false" Condition="Exists('bin/Release/net9.0/Data.Core.xml')"/>
     <Content Include="build/Data.Core.targets" Pack="true" PackagePath="build/Data.Core.targets" Visible="false"/>
   </ItemGroup>
 
