@@ -18,7 +18,7 @@
     <NoWarn>1701;1702;</NoWarn>
     <RootNamespace>Data</RootNamespace>
     <IncludeBuildOutput>false</IncludeBuildOutput>
-    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <OutDir>bin/$(TargetFramework)/$(Configuration)</OutDir>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'"/>
@@ -45,11 +45,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="bin/Debug/net9.0/Data.Core.dll" Pack="true" PackagePath="tools/debug/Data.Core.dll" Visible="false"/>
-    <Content Include="bin/Debug/net9.0/Data.Core.xml" Pack="true" PackagePath="tools/debug/Data.Core.xml" Visible="false" Condition="Exists('bin/Debug/net9.0/Data.Core.xml')"/>
-    <Content Include="bin/Release/net9.0/Data.Core.dll" Pack="true" PackagePath="tools/release/Data.Core.dll" Visible="false"/>
-    <Content Include="bin/Release/net9.0/Data.Core.xml" Pack="true" PackagePath="tools/release/Data.Core.xml" Visible="false" Condition="Exists('bin/Release/net9.0/Data.Core.xml')"/>
-    <Content Include="build/Data.Core.targets" Pack="true" PackagePath="build/Data.Core.targets" Visible="false"/>
+    <Content Include="bin/**/*" Pack="true" PackagePath="lib" Visible="false"/>
+    <Content Include="buildTransitive/**/*" Pack="true" PackagePath="buildTransitive"/>
   </ItemGroup>
 
 </Project>
