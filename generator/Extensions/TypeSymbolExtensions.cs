@@ -6,10 +6,6 @@ namespace Data
 {
     public static class TypeSymbolExtensions
     {
-        //todo: tried to use a pool for the stack but for some god forsaken reason it just wouldnt not work
-        //either the pool would be null, or the stack rented would be null, or elements in the stack would be null
-        //i gave up
-
         /// <summary>
         /// Checks if the type is a true value type and doesnt contain any references.
         /// </summary>
@@ -95,63 +91,67 @@ namespace Data
             SpecialType special = symbol.SpecialType;
             if (special == SpecialType.System_Boolean)
             {
-                return "System.Boolean";
+                return typeof(bool).FullName;
             }
             else if (special == SpecialType.System_Byte)
             {
-                return "System.Byte";
+                return typeof(byte).FullName;
             }
             else if (special == SpecialType.System_SByte)
             {
-                return "System.SByte";
+                return typeof(sbyte).FullName;
             }
             else if (special == SpecialType.System_Int16)
             {
-                return "System.Int16";
+                return typeof(short).FullName;
             }
             else if (special == SpecialType.System_UInt16)
             {
-                return "System.UInt16";
+                return typeof(ushort).FullName;
             }
             else if (special == SpecialType.System_Int32)
             {
-                return "System.Int32";
+                return typeof (int).FullName;
             }
             else if (special == SpecialType.System_UInt32)
             {
-                return "System.UInt32";
+                return typeof(uint).FullName;
             }
             else if (special == SpecialType.System_Int64)
             {
-                return "System.Int64";
+                return typeof(long).FullName;
             }
             else if (special == SpecialType.System_UInt64)
             {
-                return "System.UInt64";
+                return typeof(ulong).FullName;
             }
             else if (special == SpecialType.System_Single)
             {
-                return "System.Single";
+                return typeof(float).FullName;
             }
             else if (special == SpecialType.System_Double)
             {
-                return "System.Double";
+                return typeof(double).FullName;
             }
             else if (special == SpecialType.System_Decimal)
             {
-                return "System.Decimal";
+                return typeof(decimal).FullName;
             }
             else if (special == SpecialType.System_Char)
             {
-                return "System.Char";
+                return typeof(char).FullName;
+            }
+            else if (special == SpecialType.System_String)
+            {
+                return typeof(string).FullName;
             }
             else if (special == SpecialType.System_IntPtr)
             {
-                return "System.IntPtr";
+                return typeof(nint).FullName;
             }
             else if (special == SpecialType.System_UIntPtr)
             {
-                return "System.UIntPtr";
+                return typeof(nuint).FullName;
             }
             else
             {
