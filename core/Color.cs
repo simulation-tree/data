@@ -343,7 +343,12 @@ namespace Data
         /// <inheritdoc/>
         public readonly override int GetHashCode()
         {
-            return HashCode.Combine(r, g, b, a);
+            int hash = 17;
+            hash = hash * 31 + r.GetHashCode();
+            hash = hash * 31 + g.GetHashCode();
+            hash = hash * 31 + b.GetHashCode();
+            hash = hash * 31 + a.GetHashCode();
+            return hash;
         }
 
         /// <summary>
