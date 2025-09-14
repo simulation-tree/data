@@ -91,16 +91,16 @@ jobs:
         run: dotnet nuget add source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json --name github --username ${{ github.repository_owner }} --password ${{ github.token }} --store-password-in-clear-text
             
       - name: Publish `Data.Core`
-        run: dotnet nuget push Data.Core.${VERSION}.nupkg --source github --api-key ${NUGET_TOKEN}
+        run: dotnet nuget push SimulationTree.Data.Core.${VERSION}.nupkg --source github --api-key ${NUGET_TOKEN}
         env:
           NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
       
       - name: Publish `Data.Generator`
-        run: dotnet nuget push Data.Generator.${VERSION}.nupkg --source github --api-key ${NUGET_TOKEN}
+        run: dotnet nuget push SimulationTree.Data.Generator.${VERSION}.nupkg --source github --api-key ${NUGET_TOKEN}
         env:
           NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
       
       - name: Publish `Data`
-        run: dotnet nuget push Data.${VERSION}.nupkg --source github --api-key ${NUGET_TOKEN}
+        run: dotnet nuget push SimulationTree.Data.${VERSION}.nupkg --source github --api-key ${NUGET_TOKEN}
         env:
           NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}

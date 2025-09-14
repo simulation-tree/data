@@ -11,7 +11,7 @@
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <Title>Data</Title>
     <Authors>popcron</Authors>
-    <Company>simulation-tree</Company>
+    <Company>Simulation Tree</Company>
     <Description>Describes arbitrary data</Description>
     <RepositoryUrl>https://github.com/simulation-tree/data</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
